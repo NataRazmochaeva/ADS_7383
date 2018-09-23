@@ -21,7 +21,7 @@ int k = 0;
 
 int main()
 {
-	int run=1;
+    int run=1;
     int value=0;
     char expr[255]; //Содержит вычисляемое выражение
     FILE *in=fopen("input.txt", "r");
