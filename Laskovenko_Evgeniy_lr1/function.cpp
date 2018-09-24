@@ -1,8 +1,9 @@
+#include <iostream>
 #include "function.hpp"
 
 using namespace std;
 
-bool const_expression(istream &is, int visual, int step=1, bool cur=false)
+bool const_expression(istream &is, int visual, int step, bool cur)
 {
     char c;
 
