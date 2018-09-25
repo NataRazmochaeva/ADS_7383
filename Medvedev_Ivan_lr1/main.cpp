@@ -6,8 +6,25 @@ using namespace std ;
 bool bracket (ifstream &infile, char ch);
 void Error (short k);
 
+bool beginning (ifstream &infile, char ch, bool check){
+	if (infile >> ch){ 
+		cout << ch;
+		if ((ch == 'A') || (ch == '('))
+			check = bracket (infile, ch);
+				
+		else{
+			Error(0);
+			return false;
+		}
+	}
+	else{
+		Error(6);
+		return false;
+	}
+	return check;
+}
 
-
+	
 int main ( ){
 	cout<<"ВАС ПРИВЕТСТВУЕТ АНАЛИЗАТОР СКОБОК! ДЛЯ ТОГО ЧТОБЫ СЧИТАТЬ СКОБКИ С ФАЙЛА test.txt НАЖМИТЕ 1, ДЛЯ ВВОДА С КЛАВИАТУРЫ И ЗАПИСИ В ФАЙЛ test1.txt НАЖМИТЕ 2, ДЛЯ ВЫХОДА НАЖМИТЕ 0"<<endl;
 	bool exit = true, check;
@@ -20,22 +37,9 @@ int main ( ){
 		switch (forSwitch){
 			case 1:{
 				ifstream infile ("test.txt");
-				if (infile >> ch){ 
-					cout << ch;
-					if ((ch == 'A') || (ch == '('))
-						check = bracket (infile, ch);
-				
-					else{
-						Error(0);
-						break;
-					}
-				}
-				else{
-					Error(6);
-					break;
-				}
 				cout << endl;
-				if (infile >> ch)
+				check = beginning(infile, ch, check);
+				if (infile >> ch && check)
 					Error (7);
 				else if (check)
 					cout<<"ЭТО СКОБКИ"<<endl;
@@ -49,21 +53,9 @@ int main ( ){
 				fputs(arr,fp);
 				fclose(fp);
 				ifstream infile ("test1.txt");
-				if (infile >> ch){ 
-					cout << ch;
-					if ((ch == 'A') || (ch == '('))
-						check = bracket (infile, ch);
-					else{
-						Error(0);
-						break;
-					}
-				}
-				else{
-					Error(6);
-					break;
-				}
+				check = beginning(infile, ch, check);
 				cout << endl;
-				if (infile >> ch)
+				if (infile >> ch && check)
 					Error (7);
 				else if (check)
 					cout<<"ЭТО СКОБКИ"<<endl;
@@ -87,9 +79,11 @@ bool bracket (ifstream &infile, char ch){
 	if (ch == 'A') 
 		return true;
 	
-	else if ( ch == '(' ){
-		if (infile >> ch){
-			cout << tab << ch <<endl;
+	if ( ch != '(' ){
+		return false;
+	}
+	if (infile >> ch){
+		cout << tab << ch <<endl;
 			if (ch == 'B'){
 				tab.push_back('\t');
 				if (infile >> ch){ 
@@ -139,11 +133,6 @@ bool bracket (ifstream &infile, char ch){
 			Error(1);
 			return false; 
 		}
-	}
-	else{ 
-		Error(0);
-		return false; //ne a i ne skobka
-	}
 	
 }
 
