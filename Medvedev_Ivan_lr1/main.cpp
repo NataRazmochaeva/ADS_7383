@@ -35,7 +35,9 @@ int main ( ){
 					break;
 				}
 				cout << endl;
-				if (check)
+				if (infile >> ch)
+					Error (7);
+				else if (check)
 					cout<<"ЭТО СКОБКИ"<<endl;
 				break;
 			}
@@ -61,7 +63,9 @@ int main ( ){
 					break;
 				}
 				cout << endl;
-				if (check)
+				if (infile >> ch)
+					Error (7);
+				else if (check)
 					cout<<"ЭТО СКОБКИ"<<endl;
 				break;
 			}
@@ -82,6 +86,7 @@ bool bracket (ifstream &infile, char ch){
 	bool forCheck;
 	if (ch == 'A') 
 		return true;
+	
 	else if ( ch == '(' ){
 		if (infile >> ch){
 			cout << tab << ch <<endl;
@@ -139,6 +144,7 @@ bool bracket (ifstream &infile, char ch){
 		Error(0);
 		return false; //ne a i ne skobka
 	}
+	
 }
 
 
@@ -158,6 +164,8 @@ cout << endl << "err#" << k << endl;
 	case 5: cout << "! - НЕТ ЗАКРЫВАЮЩЕЙ СКОБКИ" << endl; break;
 		
 	case 6: cout << "! - ПУСТОЙ ФАЙЛ" << endl; break;
+
+	case 7: cout << "! - ЛИШНИЙ СИМВОЛ" << endl; break;
 
 	default : cout << "! - ...";break;
 
