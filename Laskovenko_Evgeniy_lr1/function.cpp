@@ -32,16 +32,28 @@ bool const_expression(istream &is, int visual, int step, bool cur)
             cur = false;
             cur = const_expression(is, visual, step,cur);
         }
+        else if(visual && cur==false)
+        {
+            cout <<"STEP"<<'{'<<step<<"}: "<<c<<" IS ODD OPERATOR OR INVALID TOKEN. Algorithm ends."<<endl;
+            cout << endl;
+            return cur = false;
+        }
         else
         {
             if(visual)
-                cout <<"STEP"<<'{'<<step<<"}: "<<c<<" IS INVALID. Algorithm ends."<<endl;
+                cout <<"STEP"<<'{'<<step<<"}: "<<c<<" IS INVALID TOKEN. Algorithm ends."<<endl;
             cout << endl;
             return cur = false;
         }
     }
     else
     {
+        if(visual && cur==false)
+        {
+            cout <<"STEP"<<'{'<<step<<"}: "<<c<<" MISSING DIGIT. Algorithm ends."<<endl;
+            cout << endl;
+            return cur = false;
+        }
         cout << endl;
         return cur;
     }
