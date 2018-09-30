@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -11,10 +12,6 @@ bool bracket_exp(string str, unsigned int cur_pos=0, bool flag=false, int opened
         {
             flag = true;
             flag = bracket_exp(str, cur_pos+1, flag, opened_br);
-        }
-        else if(str[cur_pos] == ' ' && str[cur_pos-1] != ' ')
-        {
-          flag = bracket_exp(str, cur_pos+1, flag, opened_br);
         }
         else if(str[cur_pos] == '(' && flag==true && str[cur_pos-1] != ')')
         {
@@ -44,9 +41,19 @@ bool bracket_exp(string str, unsigned int cur_pos=0, bool flag=false, int opened
     return flag;
 }
 
+string delet(string str){
+  int i=0;
+  while(str.length()>i){
+    if(str[i] == ' ')
+      str.erase(i,1);
+    else  i++;
+  }
+  return str;
+}
+
 int main()
 {
-    int sw_var;
+    int sw_var, i=0;
     string str;
     bool result = false;
     string file_name;
@@ -67,8 +74,9 @@ int main()
         case 1:
             cout << "Enter the string:"<< '\n';
             getline(cin, str);
-            if(str != "")
-                result = bracket_exp(str);
+            if(str != ""){
+                result = bracket_exp(delet(str));
+              }
             sw_var = 3;
             break;
         case 2:
@@ -81,11 +89,12 @@ int main()
                 sw_var = 4;
               }
             else{
-                file >> str;
-                cout << str << endl;
+                getline(file, str);
+                cout << delet(str) << endl;
                 if(str != "")
-                    result = bracket_exp(str);
+                    result = bracket_exp(delet(str));
                 sw_var = 3;
+                file.close();
               }
             break;
         case 3:
