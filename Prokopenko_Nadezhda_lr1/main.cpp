@@ -11,32 +11,29 @@ bool bracket_exp(string str, unsigned int cur_pos=0, bool flag=false, int opened
         if(str[cur_pos]=='A' && flag==false)
         {
             flag = true;
-            flag = bracket_exp(str, cur_pos+1, flag, opened_br);
         }
         else if(str[cur_pos] == '(' && flag==true && str[cur_pos-1] != ')')
         {
             flag = false;
             opened_br++;
-            flag = bracket_exp(str, cur_pos+1, flag, opened_br);
         }
         else if(str[cur_pos] == ';' && flag == true && opened_br > 0)
         {
             flag = false;
-            flag = bracket_exp(str, cur_pos+1, flag, opened_br);
         }
         else if(str[cur_pos] == ')' && flag == true && opened_br > 0)
         {
             opened_br--;
-            flag = bracket_exp(str, cur_pos+1, flag, opened_br);
+        }
+        else if(opened_br != 0)
+        {
+            return flag = false;
         }
         else
         {
             return flag = false;
         }
-    }
-    else if(opened_br != 0)
-    {
-        return flag = false;
+        flag = bracket_exp(str, cur_pos+1, flag, opened_br);
     }
     return flag;
 }
