@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -6,45 +8,70 @@
 
 using namespace std;
 
-bool Bracket(ifstream &infile);
-bool Round (ifstream &infile, char s);
-bool Square (ifstream &infile, char s );
-bool Figure (ifstream &infile, char s );
+bool Bracket(char *buf);
+bool Round (char **buf, char s);
+bool Figure (char **buf, char s);
+bool Square (char **buf, char s);
 void Error (short k);
-/*
+
+void Load ( char *filename, char *buf )
+{
+	ifstream infile (filename);
+    if (!infile) cout << "Входной файл не открыт" << endl;
+    else {
+		cout << "Входной файл открыт" << endl;
+		infile >> buf;
+   }  
+   cout << "|" << buf << "|" << endl;
+}
+
 void UserInterface ()
 {
     int key;
+    char exp[100] = {0};
     while (true) {
         cout << "Выбери действие:" << endl;
         cout << "0. Завершить выполнение;" << endl;
-        cout << "1. Загрузить выражение из файла;" << endl;
-        cout << "2. Ввести выражение с клавиатуры;" << endl;
-        cout << "3. Анализировать выражение;" << endl;
+        cout << "1. Загрузить выражение из пользовательского файла;" << endl;
+        cout << "2. Загрузить выражение из файла по умолчанию;" << endl;
+        cout << "3. Ввести выражение с клавиатуры;" << endl;
         cin >> key;
         switch (key) {
             case 0: 
                 return;
                 break;
-            case 1:{
-                    cout << "input file name: ";
-                    char filename[20];
-                    cin >> filename;
-                    ifstream infile (filename);
-                    if (!infile) cout << "Входной файл не открыт" << endl;
-                    else cout << "Входной файл открыт" << endl;
-                } 
-                break;
-            case 2:{
-                    cout << "Анализатор скобок:" << endl;
-                    ifdef (infile) {
-                        bool b = Bracket (infile);
-                        if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
-                        else cout <<"НЕТ, ЭТО НЕ СКОБКИ!" << endl;
-                    }
-                    else cout << "Выражение не определено" << endl;
-                } 
-                break;
+            case 1:
+            {
+				cout << "input file name: ";
+                char filename[20];
+                cin >> filename;
+                Load(filename, exp);
+                cout << "Анализатор скобок:" << endl;
+				bool b = Bracket(exp);
+				if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
+				else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
+            } 
+            break;
+            case 2:
+            {
+                Load("in_seq5.txt", exp);
+                cout << "Анализатор скобок:" << endl;
+				bool b = Bracket(exp);
+				if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
+				else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
+            } 
+            break;
+            case 3:
+            {
+				cout << "input expression: ";
+				cin >> exp;
+				cout << "Анализатор скобок:" << endl;
+				bool b = Bracket(exp);
+				if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
+				else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
+            } 
+            break;
+            
             //
         
             default : cout << "! - ...";
@@ -53,41 +80,35 @@ void UserInterface ()
         };
     }
 }
-*/
+
 
 int main ( )
 {
-    setlocale (0,"Rus"); // для MVC++ 2010
-    ifstream infile ("in_seq5.txt");
-    if (!infile) cout << "Входной файл не открыт!" << endl;
-    cout << "Анализатор скобок:" << endl;
-    bool b = Bracket (infile);
-    if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
-    else cout <<"НЕТ, ЭТО НЕ СКОБКИ!" << endl;
- 
+    UserInterface();
     return 0;
+    
 }
 
-bool Square (ifstream &infile, char s)
+bool Square (char **buf, char s)
 // квадратные::=[круглые фигурные] | +
 // s － текущий символ входной строки
 {   bool k;
     if (s == '+') { return true;}
     else if ( s == '[' )
-        {   if (infile >> s)
-            {   cout << s;
-                k = Round (infile,s);
+        {   if (*((*buf)++))
+            {   cout << **buf;
+                k = Round (buf, **buf);
                 if (k)
-                {   if (infile >> s)
-                    {   cout << s;
-                        k = Figure (infile,s);}
+                {   if (*((*buf)++))
+                    {   cout << **buf;
+                        k = Figure (buf, **buf);}
                     else {Error (5); return false;} // квадр - пуст!
                 }
                 else return false; //первый квадр ошибочен
                 if (k) // оба квадр правильны
-                    if (infile >> s)
-                    {   if (s != ']') {Error(3 ); return false;}
-                        cout << s;
+                    if (*((*buf)++))
+                    {   if (**buf != ']') {Error(3 ); return false;}
+                        cout << **buf;
                         return true;
                     }
                     else {Error (3); return false;}
@@ -99,26 +120,26 @@ bool Square (ifstream &infile, char s)
 }
 // end of Square
 
-bool Round (ifstream &infile, char s)
+bool Round (char **buf, char s)
 // круглые::=(фигурные квадратные) | -
 // s － текущий символ входной строки
 {   bool k;
     if (s == '-') { return true;}
     else if ( s == '(' )
-        {   if (infile >> s)
-            {   cout << s;
-                k = Figure (infile,s);
+        {   if (*((*buf)++))
+            {   cout << **buf;
+                k = Figure (buf, **buf);
                 if (k)
-                {   if (infile >> s)
-                    {   cout << s;
-                        k = Square (infile,s);}
+                {   if (*((*buf)++))
+                    {   cout << **buf;
+                        k = Square (buf, **buf);}
                     else {Error (8); return false;} // кругл - пуст!
                 }
                 else return false; //первый квадр ошибочен
-                if (k) // оба квадр правильны
-                    if (infile >> s)
-                    {   if (s != ')') {Error(6); return false;}
-                        cout << s;
+                if (k) // оба кругл правильны
+                    if (*((*buf)++))
+                    {   if (**buf != ')') {Error(6); return false;}
+                        cout << **buf;
                         return true;
                     }
                     else {Error (6); return false;} 
@@ -131,26 +152,26 @@ bool Round (ifstream &infile, char s)
 // end of Round
 
 
-bool Figure (ifstream &infile, char s)
+bool Figure (char **buf, char s)
 // фигурные::={квадратные круглые} | 0
 // s － текущий символ входной строки
 {   bool k;
     if (s == '0') { return true;}
     else if ( s == '{' )
-        {   if (infile >> s)
-            {   cout << s;
-                k = Square (infile,s);
+        {   if (*((*buf)++))
+            {   cout << **buf;
+                k = Square (buf, **buf);
                 if (k)
-                {   if (infile >> s)
-                    {   cout << s;
-                        k = Round (infile,s);}
+                {   if (*((*buf)++))
+                    {   cout << **buf;
+                        k = Round (buf, **buf);}
                     else {Error (11); return false;} // фиг - пуст!
                 }
                 else return false; //первый квадр ошибочен
                 if (k) // оба квадр правильны
-                    if (infile >> s)
-                    {   if (s != '}') {Error(9); return false;}
-                        cout << s;
+                    if (*((*buf)++))
+                    {   if (**buf != '}') {Error(9); return false;}
+                        cout << **buf;
                         return true;
                     }
                     else {Error (9); return false;}
@@ -162,19 +183,20 @@ bool Figure (ifstream &infile, char s)
 }
 // end of Square
 
-bool Bracket(ifstream &infile)
+bool Bracket(char *buf)
 {   char s;
     bool b;
     b = false;
-    if (infile >> s)
+    s = *(buf);
+    if (s)
     {   cout << s;
-        if ((s == '+') || (s == '[')) b = Square (infile, s);
-        else if ((s == '-') || (s == '(')) b = Round (infile, s);
-            else if ((s == '0') || (s == '{')) b = Figure (infile, s);
+        if ((s == '+') || (s == '[')) b = Square (&buf, s);
+        else if ((s == '-') || (s == '(')) b = Round (&buf, s);
+            else if ((s == '0') || (s == '{')) b = Figure (&buf, s);
                 else Error(2); //недопустимый начальный символ
-        infile >> s;
-        if (b && !infile.eof()) Error(1); // лишние символы
-        b = (b && infile.eof());
+        s = ((*buf)++);
+        if (b && !(*buf)) Error(1); // лишние символы
+        b = (b && *buf);
     }
     else Error (0); // пустая входная строка
     return b;
