@@ -32,7 +32,7 @@ int main() {
             ifstream infile("test.txt");
             if(!infile)cout<<"Входной файл не может быть открыт!"<<endl;
             else {
-                if(Brackets(infile, sim) && !(infile>>sim)) {
+                if(Brackets(infile, sim) && !(infile>>sim)) { //проверка на конец строки
                     cout<<endl;
                     cout<<"\033[32mЭТО СКОБКИ\033[0m"<<endl;
                 }
@@ -52,7 +52,7 @@ int main() {
             ifstream infile("test1.txt");
             if(!infile)cout<<"Входной файл не может быть открыт!"<<endl;
             else {
-                if(Brackets(infile, sim) && !(infile>>sim)) {
+                if(Brackets(infile, sim) && !(infile>>sim)) { //проверка на конец строки
                     cout<<endl;
                     cout<<"\033[32mЭТО СКОБКИ\033[0m"<<endl;
                 }
