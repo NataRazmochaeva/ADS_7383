@@ -17,8 +17,8 @@ int main ( ){
 	cout << "ДЛЯ ПЕРЕЗАПИСИ И АНАЛИЗА СКОБОК ИЗ test.txt НАЖМИТЕ '2'" << endl; 
 	cout << "ДЛЯ ПРЕРЫВАНИЯ ПРОГРАММЫ НАЖМИТЕ '0'" << endl;
 	
-	bool exit = true, check;
-	char ch;
+	bool check;
+	char ch, name[30];
 	char arr[100];
 	int forSwitch;
 	
@@ -32,14 +32,15 @@ int main ( ){
 			break;
 		}
 		case 2:{
-			fp = fopen("test.txt", "w");
+			fp = fopen("test1.txt", "w");
 			if (!fp)
 				return 0;
 			cin >> arr;
 			fputs(arr,fp);
 			fclose(fp);
-			ifstream infile ("test.txt");
+			ifstream infile ("test1.txt");
 			forFile(infile, check, ch);
+			remove("test1.txt");
 			break;
 		}
 		case 0:{
