@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <unistd.h>
 
-
 using namespace std;
 
 bool Bracket(char *buf);
@@ -22,7 +21,14 @@ void Load ( char *filename, char *buf )
 		cout << "Входной файл открыт" << endl;
 		infile >> buf;
    }  
-   cout << "|" << buf << "|" << endl;
+}
+
+void PrintAnsw(char *exp)
+{
+    cout << "Анализатор скобок:" << endl;
+    bool b = Bracket(exp);
+    if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
+    else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
 }
 
 void UserInterface ()
@@ -46,29 +52,20 @@ void UserInterface ()
                 char filename[20];
                 cin >> filename;
                 Load(filename, exp);
-                cout << "Анализатор скобок:" << endl;
-				bool b = Bracket(exp);
-				if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
-				else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
+                PrintAnsw(exp);
             } 
             break;
             case 2:
             {
                 Load("in_seq5.txt", exp);
-                cout << "Анализатор скобок:" << endl;
-				bool b = Bracket(exp);
-				if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
-				else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
+                PrintAnsw(exp);
             } 
             break;
             case 3:
             {
 				cout << "input expression: ";
 				cin >> exp;
-				cout << "Анализатор скобок:" << endl;
-				bool b = Bracket(exp);
-				if (b) cout << endl << "ЭТО СКОБКИ!" << endl;
-				else cout << "НЕТ, ЭТО НЕ СКОБКИ!" << endl;
+				PrintAnsw(exp);
             } 
             break;
             
