@@ -79,6 +79,11 @@ bool bracket (ifstream &infile, char ch) {
 			else {
 				Error(2);
 				return false;
+			}
+
+			if (!forCheck) {
+				Error(3);
+				return false;
 			}	
 			
 			tab.pop_back();
