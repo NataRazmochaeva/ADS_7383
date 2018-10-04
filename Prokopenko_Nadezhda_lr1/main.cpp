@@ -47,10 +47,17 @@ string delet(string str){
   }
   return str;
 }
+int print(bool result, int sw_var){
+  if(result)
+      cout << "True. This is the concept of brackets.\n";
+  else
+      cout << "False. This is not the concept of brackets.\n";
+  return sw_var = 4;
+}
 
 int main()
 {
-    int sw_var, i=0;
+    int sw_var;
     string str;
     bool result = false;
     string file_name;
@@ -61,9 +68,6 @@ int main()
     cout << "2-input a line from a file" << '\n';
     cin >> sw_var;
     cin.ignore();
-    if(sw_var == 3)
-        sw_var = 4;
-
     while(sw_var)
     {
         switch(sw_var)
@@ -74,7 +78,7 @@ int main()
             if(str != ""){
                 result = bracket_exp(delet(str));
               }
-            sw_var = 3;
+            sw_var=print(result, sw_var);
             break;
         case 2:
             cout << "Enter the name of the file:"<< '\n';
@@ -90,16 +94,9 @@ int main()
                 cout << delet(str) << endl;
                 if(str != "")
                     result = bracket_exp(delet(str));
-                sw_var = 3;
+                sw_var=print(result, sw_var);
                 file.close();
               }
-            break;
-        case 3:
-            if(result)
-                cout << "True. This is the concept of brackets.\n";
-            else
-                cout << "False. This is not the concept of brackets.\n";
-            sw_var = 4;
             break;
         case 0:
             break;
@@ -107,8 +104,6 @@ int main()
             cout << "Enter again.\n";
             cin >> sw_var;
             cin.ignore();
-            if(sw_var == 3)
-                sw_var = 4;
             break;
         }
     }
