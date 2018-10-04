@@ -6,19 +6,21 @@
 */
 
 #include <iostream>
+#include <cstdio>
 #include <fstream>
 #include <iomanip>
 using namespace std;
 
-bool Bracket(ifstream &infile);
-bool Round(ifstream &infile, char ch);
-bool Square(ifstream &infile, char ch);
+bool Bracket(ifstream &infile, char ch);
+bool Round(ifstream &infile, char ch, int &err);
+bool Square(ifstream &infile, char ch, int &err);
 void Error(short k);
 
 int main() {
 
     int n;
     bool br;
+    char ch;
     char data[1000];
     FILE *f;
     cout<<"\nВас приветствует анализатор скобок!\n\nВыберите способ ввода данных:\n1 - Для ввода данных с клавиатуры\n2 - Для использования данных из файла\n0 - Для выхода из программы"<<endl;
@@ -30,22 +32,7 @@ int main() {
 
         return 0;
 
-    case 1:
-    {
-        /*        f = fopen("test.txt", "w"); //создание файла
-                cin»data;
-                fputs(data, f);
-                fclose(f);
-
-                ifstream infile("test.txt");
-                if(!infile) cout«"Входной файл не может быть открыт!"«endl;
-                else {
-                    br = Bracket(infile);
-                    cout«endl;
-                    if (br) cout«"Это скобки"«endl;
-                    else cout«"Это НЕ скобки!"«endl;
-                }
-        */
+    case 1: {
 
         f = fopen("test.txt", "w");
         cin>>data;
@@ -58,39 +45,61 @@ int main() {
             return 0;
         }
 
-        br = Bracket(infile);
+        br = Bracket(infile, ch);
+        if (br && !infile>>ch) cout<<"\nЭто скобки!"<<endl;
+        else cout<<"\nЭто НЕ скобки!"<<endl;
+
         infile.close();
-
-        cout<<endl;
-
-        if (br) cout<<"Это скобки!"<<endl;
-        else cout<<"Это НЕ скобки!"<<endl;
-
-        remove("test1.txt"); // удаление файла
+        remove("test.txt");
         return 0;
     }
-    case 2:
-    {
+
+    case 2: {
+
         ifstream infile("test1.txt");
         if(!infile) {
             cout<< "Входной файл не открыт!"<<endl;
             break;
         }
 
-        br = Bracket(infile);
+        br = Bracket(infile, ch);
+        if (br && !infile>>ch) cout<<"\nЭто скобки!"<<endl;
+        else cout<<"\nЭто НЕ скобки!"<<endl;
+
         infile.close();
-
-        cout<<endl;
-
-        if (br) cout<<"Это скобки!"<<endl;
-        else cout<<"Это НЕ скобки!"<<endl;
-
         return 0;
     }
     }
 }
 
-bool Square(ifstream &infile, char ch) {
+bool Bracket(ifstream &infile, char ch) {
+
+// скобки::= квадратные | круглые
+
+    int err = 0, err1;
+
+    infile>>ch;
+
+    if (!infile>>ch) {
+        Error(err);
+        return false;
+    }
+
+    if (Square(infile, ch, err)) return true;
+    else { // это не квадратные скобки
+        err1 = err; // в err1 записана ошибка из Square
+
+        if (Round(infile, ch, err)) return true;
+        else {
+            Error(err);    // ошибка в круглых скобках
+            return false;
+        }
+        Error(err1); // ошибка в квадратных скобках
+        return false;
+    }
+}
+
+bool Square(ifstream &infile, char ch, int &err) {
 
 // квадратные::=[[кваратные](круглые)] | B
 // ch - текущий символ входной строки
@@ -100,64 +109,64 @@ bool Square(ifstream &infile, char ch) {
         return true;
     }
 
-    else if (ch == '[') {
-        cout<<ch;
-        infile>>ch;
-        if (ch == '[') {
-            cout<<ch;
-            infile>>ch;
-            if (Square(infile,ch)) {
-                infile>>ch;
-                if (ch == ']') {
-                    cout<<ch;
-                    infile>>ch;
-                    if (ch == '(') {
-                        cout<<ch;
-                        infile>>ch;
-                        if (Round(infile, ch)) {
-                            infile>>ch;
-                            if (ch == ')') {
-                                cout<<ch;
-                                infile>> ch;
-                                if (ch == ']') {
-                                    cout<<ch;
-                                    return true;
-                                }
-                                else {
-                                    Error(2);
-                                    return false;
-                                }
-                            }
-                            else {
-                                Error(4);
-                                return false;
-                            }
-                        }
-                        else return false;
-                    }
-                    else {
-                        Error(3);
-                        return false;
-                    }
-                }
-                else {
-                    Error(2);
-                    return false;
-                }
-            }
-            else return false;
-        }
-        else {
-            Error(1);
-            return false;
-        }
-    }
-    else {
+    if (ch != '[') {
+        err = 6;
         return false;
     }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (ch != '[') {
+        err = 1;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (!Square(infile, ch, err)) return false;
+
+    infile>>ch;
+
+    if (ch != ']') {
+        err = 2;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (ch != '(') {
+        err = 3;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (!Round(infile, ch, err)) return false;
+
+    infile>>ch;
+
+    if (ch != ')') {
+        err = 4;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (ch != ']') {
+        err = 2;
+        return false;
+    }
+
+    cout<<ch;
+    return true;
 }
 
-bool Round(ifstream &infile, char ch) {
+bool Round(ifstream &infile, char ch, int &err) {
 
 // круглые::=((круглые)[квадратные]) | A
 // ch - текущий символ входной строки
@@ -167,98 +176,91 @@ bool Round(ifstream &infile, char ch) {
         return true;
     }
 
-    else if (ch == '(') {
-        cout<<ch;
-        infile>>ch;
-        if (ch == '(') {
-            cout<<ch;
-            infile>>ch;
-            if (Round(infile, ch)) {
-                infile>>ch;
-                if (ch == ')') {
-                    cout<<ch;
-                    infile>>ch;
-                    if (ch == '[') {
-                        cout<<ch;
-                        infile>>ch;
-                        if (Square(infile, ch)) {
-                            infile>>ch;
-                            if (ch == ']') {
-                                cout<<ch;
-                                infile>>ch;
-                                if (ch == ')') {
-                                    cout<<ch;
-                                    return true;
-                                }
-                                else {
-                                    Error (4);
-                                    return false;
-                                }
-                            }
-                            else {
-                                Error(2);
-                                return false;
-                            }
-                        }
-                        else return false;
-                    }
-                    else {
-                        Error(1);
-                        return false;
-                    }
-                }
-                else {
-                    Error(4);
-                    return false;
-                }
-            }
-            else return false;
-        }
-        else {
-            Error(3);
-            return false;
-        }
-    }
-    else {
-        //      Error(3);
+    if (ch != '(') {
+        err = 7;
         return false;
     }
-}
 
-bool Bracket(ifstream &infile) {
+    cout<<ch;
+    infile>>ch;
 
-// скобки::= квадратные | круглые
-
-    char ch;
-
-    if (infile>>ch) {
-        if (Square(infile, ch)) return true;
-        else if (Round(infile, ch)) return true;
-        else return false;
+    if (ch != '(') {
+        err = 3;
+        return false;
     }
-    else Error(0);
 
+    cout<<ch;
+    infile>>ch;
+
+    if (!Round(infile, ch, err)) return false;
+
+    infile>>ch;
+
+    if (ch != ')') {
+        err = 4;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (ch != '[') {
+        err = 1;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (!Square(infile, ch, err)) return false;
+
+    infile>>ch;
+
+    if (ch != ']') {
+        err = 2;
+        return false;
+    }
+
+    cout<<ch;
+    infile>>ch;
+
+    if (ch != ')') {
+        err = 4;
+        return false;
+    }
+
+    cout<<ch;
+    return true;
 }
 
 void Error(short k) {
 
-    cout<< endl << "Ошибка №" << k << ": ";
+    cout<< endl <<"\nОшибка №"<< k << ": ";
 
     switch(k) {
     case 0:
-        cout<< "Пустая входная строка." <<endl;
+        cout<<"Пустая входная строка.";
         break;
     case 1:
-        cout<< "Не хватает '['." <<endl;
+        cout<<"Не хватает '['.";
         break;
     case 2:
-        cout<< "Не хватает ']'." <<endl;
+        cout<<"Не хватает ']'.";
         break;
     case 3:
-        cout<< "Не хватает '('."<<endl;
+        cout<<"Не хватает '('.";
         break;
     case 4:
-        cout<< "Не хватает ')'." <<endl;
+        cout<<"Не хватает ')'.";
+        break;
+    case 5:
+        cout<<"Неправильная последвательность!";
+        break;
+    case 6:
+        cout<<"Не хватает '[' или 'B'.";
+        break;
+    case 7:
+        cout<<"Не хватает '(' или 'A'.";
         break;
     }
     return;
