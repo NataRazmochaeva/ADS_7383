@@ -11,6 +11,7 @@
 #include <iomanip>
 using namespace std;
 
+void File(ifstream &infile, char ch);
 bool Bracket(ifstream &infile, char ch);
 bool Round(ifstream &infile, char ch, int &err);
 bool Square(ifstream &infile, char ch, int &err);
@@ -19,7 +20,6 @@ void Error(short k);
 int main() {
 
     int n;
-    bool br;
     char ch;
     char data[1000];
     FILE *f;
@@ -40,15 +40,7 @@ int main() {
         fclose(f);
 
         ifstream infile("test.txt");
-        if(!infile) {
-            cout<< "Входной файл не открыт!"<<endl;
-            return 0;
-        }
-
-        br = Bracket(infile, ch);
-        if (br && !infile>>ch) cout<<"\nЭто скобки!"<<endl;
-        else cout<<"\nЭто НЕ скобки!"<<endl;
-
+        File(infile, ch);
         infile.close();
         remove("test.txt");
         return 0;
@@ -57,19 +49,20 @@ int main() {
     case 2: {
 
         ifstream infile("test1.txt");
-        if(!infile) {
-            cout<< "Входной файл не открыт!"<<endl;
-            break;
-        }
-
-        br = Bracket(infile, ch);
-        if (br && !infile>>ch) cout<<"\nЭто скобки!"<<endl;
-        else cout<<"\nЭто НЕ скобки!"<<endl;
-
-        infile.close();
+	File(infile, ch);
         return 0;
     }
     }
+}
+
+void File(ifstream &infile, char ch){
+
+        if(!infile) {
+            cout<< "Входной файл не открыт!"<<endl;
+        }
+
+        if (Bracket(infile, ch) && !(infile>>ch)) cout<<"\nЭто скобки!"<<endl;
+        else cout<<"\nЭто НЕ скобки!"<<endl;
 }
 
 bool Bracket(ifstream &infile, char ch) {
