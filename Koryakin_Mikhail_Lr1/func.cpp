@@ -56,6 +56,8 @@ bool rec(istream &files, bool cur, int flag){	//Рекурсивная функ�
 }
 
 bool check(string str, bool flag=false, unsigned int k=0){
+	while (str[k] == ' ')
+		k++;
 	if (k<str.length()){
 		if(!flag && str.substr(k, str.find(' ', k)-k)=="not")
 			flag=check(str, false, k+4);
