@@ -4,7 +4,7 @@
 using namespace std;
 
 void pr_menu(){
-	cout << "Выберите действие:" << endl;
+	cout << endl << "Выберите действие:" << endl;
     cout << "1 - ввод с клавиатуры" << endl;
     cout << "2 - ввод из файла" << endl;
     cout << "0 - выход" << endl;
@@ -38,7 +38,7 @@ void work_with_console(){
     int *arr = new int[n];
     cout << "введите количество элементов массива" << endl;
     cin >> n;
-    if (!n){
+    if (n<=0){
         cout << "неверное количество" << endl;
         return;
     }
