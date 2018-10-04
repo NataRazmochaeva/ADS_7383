@@ -13,6 +13,7 @@
 
 using namespace std;
 
+void check(ifstream &infile, char sim);
 bool Brackets(ifstream &infile, char sim);
 void Error(short s); //символ короткой длины, короткий "int"
 
@@ -30,17 +31,7 @@ int main() {
 
         case 1: {
             ifstream infile("test.txt");
-            if(!infile)cout<<"Входной файл не может быть открыт!"<<endl;
-            else {
-                if(Brackets(infile, sim) && !(infile>>sim)) { //проверка на конец строки
-                    cout<<endl;
-                    cout<<"\033[32mЭТО СКОБКИ\033[0m"<<endl;
-                }
-                else {
-                    cout<<endl;
-                    cout<<"\033[31mНет, это не скобки\033[0m"<<endl;
-                }
-            }
+            check(infile, sim);
             break;
         }
 
@@ -50,17 +41,7 @@ int main() {
             fputs(arr,f);
             fclose(f);
             ifstream infile("test1.txt");
-            if(!infile)cout<<"Входной файл не может быть открыт!"<<endl;
-            else {
-                if(Brackets(infile, sim) && !(infile>>sim)) { //проверка на конец строки
-                    cout<<endl;
-                    cout<<"\033[32mЭТО СКОБКИ\033[0m"<<endl;
-                }
-                else {
-                    cout<<endl;
-                    cout<<"\033[31mНет, это не скобки\033[0m"<<endl;
-                }
-            }
+            check(infile, sim);
             remove("test1.txt"); // удаление файла
             break;
         }
@@ -136,3 +117,18 @@ void Error(short s) {
     }
 }
 
+
+
+void check(ifstream &infile, char sim) {
+    if(!infile)cout<<"Входной файл не может быть открыт!"<<endl;
+    else {
+        if(Brackets(infile, sim) && !(infile>>sim)) { //проверка на конец строки
+            cout<<endl;
+            cout<<"\033[32mЭТО СКОБКИ\033[0m"<<endl;
+        }
+        else {
+            cout<<endl;
+            cout<<"\033[31mНет, это не скобки\033[0m"<<endl;
+        }
+    }
+}
