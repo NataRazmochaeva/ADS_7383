@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iomanip>
 #include <unistd.h>
+#include <string.h>
 
 using namespace std;
 
@@ -15,11 +16,12 @@ void Error (short k);
 
 void Load ( char *filename, char *buf )
 {
-	ifstream infile (filename);
+    ifstream infile (filename);
     if (!infile) cout << "Входной файл не открыт" << endl;
     else {
-		cout << "Входной файл открыт" << endl;
-		infile >> buf;
+        cout << "Входной файл открыт" << endl;
+        infile.getline(buf, 100);
+        infile.close();
    }  
 }
 
@@ -48,7 +50,7 @@ void UserInterface ()
                 break;
             case 1:
             {
-				cout << "input file name: ";
+                cout << "input file name: ";
                 char filename[20];
                 cin >> filename;
                 Load(filename, exp);
@@ -63,9 +65,9 @@ void UserInterface ()
             break;
             case 3:
             {
-				cout << "input expression: ";
-				cin >> exp;
-				PrintAnsw(exp);
+                cout << "input expression: ";
+                cin >> exp;
+                PrintAnsw(exp);
             } 
             break;
             
@@ -184,7 +186,16 @@ bool Bracket(char *buf)
 {   char s;
     bool b;
     b = false;
+    char exp[100] = {0};
+    int j = 0;
+
+    for (int i = 0; buf[i] != 0; i++) // убираем пробелы из строки
+        if (buf[i] != ' ')
+            exp[j++] = buf[i];
+    strcpy(buf, exp); 
+
     s = *(buf);
+
     if (s)
     {   cout << s;
         if ((s == '+') || (s == '[')) b = Square (&buf, s);
@@ -231,4 +242,3 @@ void Error (short k)
         // ?
     };
 }
-// end of Error
