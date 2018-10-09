@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
+#include <exception>
 using namespace std;
 
 typedef char base; // базовый тип элементов (атомов)
@@ -19,7 +20,6 @@ struct s_expr {
     }node; //end union node
 }; //end s_expr
 typedef s_expr *lisp;
-// функции
 // базовые функции:
 lisp head (const lisp s);
 lisp tail (const lisp s);
@@ -40,29 +40,34 @@ lisp copy_lisp (const lisp x);
 lisp concat (const lisp y, const lisp z);
 lisp flatten(const lisp s);
 //....................................
-void print(lisp s1, lisp s2, istream &is);
+void print(istream &is);
 
 int main ( )
 {
-    lisp s1, s2;
     filebuf file;
     string file_name;
     stringbuf exp;
     string temp_str;
-   // ifstream infile ("a.txt");
     int run = 1;
-    int k;
+    string k;
+    int m;
     while(run){
         cout<<"Введите 1, если хотите ввести выражение из консоли, введите 2, если хотите ввести выражение из файла, 3 - выход из программы."<<endl;
-        cin>>k;
-        cin.ignore();
-        switch(k){
+        getline(cin, k);
+        try{
+	    m=stoi(k);
+        }
+        catch(std::exception& a){
+	    cout<<"Fewfwe"<<endl;
+        }
+	try{	
+        switch(m){
             case 1:{
                 cout << "введите list1:" << endl;
                 getline(cin, temp_str);
                 istream is(&exp);
                 exp.str(temp_str);
-                print(s1,s2,is);
+                print(is);
             break;
             }
             case 2:{
@@ -70,7 +75,7 @@ int main ( )
                     getline(infile, temp_str);
                     istream is(&exp);
                     exp.str(temp_str);
-                    print(s1,s2,is);
+                    print(is);
                 break;
         }
             case 3:
@@ -79,12 +84,16 @@ int main ( )
             default:
                 break;
         }
-
+	}
+	catch(std::exception& a){
+		cout << a.what() << endl;
+	}
     }
     return 0;
 }
 
-void print(lisp s1, lisp s2, istream &is){
+void print(istream &is){
+    lisp s1, s2;
     read_lisp (s1, is);
     cout << "введен list1: " << endl;
     write_lisp (s1);
@@ -103,12 +112,10 @@ lisp head (const lisp s){// PreCondition: not null (s)
         if (!isAtom(s))
             return s->node.pair.hd;
         else {
-            cerr << "Error: Head(atom) \n";
-            exit(1);
+            throw std::invalid_argument("Error: Head(atom) \n");
         }
     else {
-        cerr << "Error: Head(nil) \n";
-        exit(1);
+        throw std::invalid_argument("Error: Head(nil) \n");
     }
 }
 //.......................................
@@ -128,12 +135,10 @@ lisp tail (const lisp s){// PreCondition: not null (s)
         if (!isAtom(s))
             return s->node.pair.tl;
         else {
-            cerr << "Error: Tail(atom) \n";
-            exit(1);
+            throw std::invalid_argument("Error: Tail(atom) \n");
         }
     else {
-        cerr << "Error: Tail(nil) \n";
-        exit(1);
+        throw std::invalid_argument("Error: Tail(nil) \n");
     }
 }
 //.......................................
@@ -141,14 +146,12 @@ lisp cons (const lisp h, const lisp t){
 // PreCondition: not isAtom (t)
     lisp p;
     if (isAtom(t)) {
-        cerr << "Error: Cons(*, atom)\n";
-        exit(1);
+        throw std::invalid_argument("Error: Cons(*, atom)\n");
     }
     else {
         p = new s_expr;
         if ( p == nullptr) {
-            cerr << "Memory not enough\n";
-            exit(1);
+            throw std::invalid_argument("Memory not enough\n");
         }
         else {
             p->tag = false;
@@ -181,8 +184,7 @@ void destroy (lisp s){
 //...........................
 base getAtom (const lisp s){
     if (!isAtom(s)) {
-        cerr << "Error: getAtom(s) for !isAtom(s) \n";
-        exit(1);
+        throw std::invalid_argument("Error: getAtom(s) for !isAtom(s) \n");
     }
     else
         return (s->node.atom);
@@ -199,8 +201,7 @@ void read_lisp ( lisp& y, istream &is_str){
 //...........................
 void read_s_expr (base prev, lisp& y, istream &is_str){ //prev － ранее прочитанный символ}
     if ( prev == ')' ) {
-        cerr << " ! List.Error 1 - нет открывающей скобки" << endl;
-        exit(1);
+        throw std::invalid_argument(" ! List.Error 1 - нет открывающей скобки");
     }
     else if ( prev != '(' )
         y = make_atom (prev);
@@ -212,8 +213,7 @@ void read_seq ( lisp& y, istream &is_str){
     base x;
     lisp p1, p2;
     if (!(is_str >> x)) {
-        cerr << " ! List.Error 2 - нет закрывающей скобки " << endl;
-        exit(1);
+        throw std::invalid_argument(" ! List.Error 2 - нет закрывающей скобки " );
     }
     else {
         while ( x==' ' ){
@@ -277,8 +277,4 @@ lisp concat (const lisp y, const lisp z){
         return copy_lisp(z);
     else
         return cons (copy_lisp(head (y)), concat (tail (y), z));
-} // end concat
-// -----------------------
-//end copy-lisp
-
-
+}
