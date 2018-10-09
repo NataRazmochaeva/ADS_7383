@@ -20,8 +20,6 @@ struct s_expr {
 }; //end s_expr
 typedef s_expr *lisp;
 // функции
-void print_s_expr( lisp s );
-void syntax( base x, lisp& y);
 // базовые функции:
 lisp head (const lisp s);
 lisp tail (const lisp s);
