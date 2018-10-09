@@ -9,6 +9,8 @@
 #include <cstdio>
 #include <fstream>
 #include <iomanip>
+#include <cctype>
+#define N 1000
 using namespace std;
 
 void File(ifstream &infile, char ch);
@@ -21,7 +23,7 @@ int main() {
 
     int n;
     char ch;
-    char data[1000];
+    char data[N];
     FILE *f;
     cout<<"\nВас приветствует анализатор скобок!\n\nВыберите способ ввода данных:\n1 - Для ввода данных с клавиатуры\n2 - Для использования данных из файла\n0 - Для выхода из программы"<<endl;
     cin>>n;
@@ -34,35 +36,49 @@ int main() {
 
     case 1: {
 
-        f = fopen("test.txt", "w");
+        f = fopen("test1.txt", "w");
         cin>>data;
         fputs(data,f);
         fclose(f);
 
-        ifstream infile("test.txt");
+        ifstream infile("test1.txt");
         File(infile, ch);
-        infile.close();
-        remove("test.txt");
+        remove("test1.txt");
         return 0;
     }
 
     case 2: {
 
-        ifstream infile("test1.txt");
-	File(infile, ch);
+        ifstream infile("test.txt");
+        File(infile, ch);
         return 0;
     }
     }
 }
 
-void File(ifstream &infile, char ch){
+void File(ifstream &infile, char ch) {
 
-        if(!infile) {
-            cout<< "Входной файл не открыт!"<<endl;
-        }
+    FILE *file;
 
-        if (Bracket(infile, ch) && !(infile>>ch)) cout<<"\nЭто скобки!"<<endl;
-        else cout<<"\nЭто НЕ скобки!"<<endl;
+    if(!infile) {
+        cout<< "Входной файл не открыт!"<<endl;
+    }
+
+    file = fopen("tmp.txt", "w");
+    ofstream out("tmp.txt");
+
+    while (infile>>ch) {
+        while (isspace(ch)) infile>>ch;
+        out<<ch;
+    }
+
+    fclose(file);
+
+    ifstream inf("tmp.txt");
+
+    if (Bracket(inf, ch) && !(inf>>ch)) cout<<"\nЭто скобки!"<<endl;
+    else cout<<"\nЭто НЕ скобки!"<<endl;
+//    remove("tmp.txt");
 }
 
 bool Bracket(ifstream &infile, char ch) {
