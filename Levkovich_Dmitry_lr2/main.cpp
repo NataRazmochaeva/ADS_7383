@@ -57,7 +57,7 @@ int main ( )
         try{
 	    m=stoi(k);
         }
-        catch(std::exception& a){
+        catch(exception& a){
 	    cout<<"Fewfwe"<<endl;
         }
 	try{	
@@ -85,7 +85,7 @@ int main ( )
                 break;
         }
 	}
-	catch(std::exception& a){
+	catch(exception& a){
 		cout << a.what() << endl;
 	}
     }
@@ -112,10 +112,10 @@ lisp head (const lisp s){// PreCondition: not null (s)
         if (!isAtom(s))
             return s->node.pair.hd;
         else {
-            throw std::invalid_argument("Error: Head(atom) \n");
+            throw invalid_argument("Error: Head(atom) \n");
         }
     else {
-        throw std::invalid_argument("Error: Head(nil) \n");
+        throw invalid_argument("Error: Head(nil) \n");
     }
 }
 //.......................................
@@ -135,10 +135,10 @@ lisp tail (const lisp s){// PreCondition: not null (s)
         if (!isAtom(s))
             return s->node.pair.tl;
         else {
-            throw std::invalid_argument("Error: Tail(atom) \n");
+            throw invalid_argument("Error: Tail(atom) \n");
         }
     else {
-        throw std::invalid_argument("Error: Tail(nil) \n");
+        throw invalid_argument("Error: Tail(nil) \n");
     }
 }
 //.......................................
@@ -146,12 +146,12 @@ lisp cons (const lisp h, const lisp t){
 // PreCondition: not isAtom (t)
     lisp p;
     if (isAtom(t)) {
-        throw std::invalid_argument("Error: Cons(*, atom)\n");
+        throw invalid_argument("Error: Cons(*, atom)\n");
     }
     else {
         p = new s_expr;
         if ( p == nullptr) {
-            throw std::invalid_argument("Memory not enough\n");
+            throw invalid_argument("Memory not enough\n");
         }
         else {
             p->tag = false;
@@ -184,7 +184,7 @@ void destroy (lisp s){
 //...........................
 base getAtom (const lisp s){
     if (!isAtom(s)) {
-        throw std::invalid_argument("Error: getAtom(s) for !isAtom(s) \n");
+        throw invalid_argument("Error: getAtom(s) for !isAtom(s) \n");
     }
     else
         return (s->node.atom);
@@ -201,7 +201,7 @@ void read_lisp ( lisp& y, istream &is_str){
 //...........................
 void read_s_expr (base prev, lisp& y, istream &is_str){ //prev － ранее прочитанный символ}
     if ( prev == ')' ) {
-        throw std::invalid_argument(" ! List.Error 1 - нет открывающей скобки");
+        throw invalid_argument(" ! List.Error 1 - нет открывающей скобки");
     }
     else if ( prev != '(' )
         y = make_atom (prev);
@@ -213,7 +213,7 @@ void read_seq ( lisp& y, istream &is_str){
     base x;
     lisp p1, p2;
     if (!(is_str >> x)) {
-        throw std::invalid_argument(" ! List.Error 2 - нет закрывающей скобки " );
+        throw invalid_argument(" ! List.Error 2 - нет закрывающей скобки " );
     }
     else {
         while ( x==' ' ){
