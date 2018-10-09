@@ -2,7 +2,6 @@
 // Program SyntaxAnalysisOfBracket;
 // вариант с синхронным выводом входной строки (до места ошибки включительно)
 /* Определения (синтаксис)
-Expression = выражение, Logical = простое логическое, Mark = знак операции, Tilda - знак '~'
 простое_логическое::= TRUE | FALSE | простой_идентификатор |
 NOT простое_логическое
 (простое_логическое знак_операции простое_логическое)
@@ -10,66 +9,73 @@ NOT простое_логическое
 знак-операции::= AND | OR
 */
 #include <iostream>
+#include <strstream>
 #include <fstream>
-#include <iomanip>
-#include <cctype>
 using namespace std ;
-bool Expression(ifstream &infile, bool b, char s);
-bool Logical (ifstream &infile, char s);
-bool Mark (char s );
-char Tilda(ifstream &infile, char s);
+
+bool Logical (strstream &x, string word);
+bool Mark (string word );
+string Not(strstream &x, string word);
+string Space(char str0[]);
 void Error (short k);
 
 int main ()
 {
-    char str[1000];
-    char str1[1];
-    int k = 0;
+    string word;
+    string str;
+    char str0[1000];
+    short k;
     bool b;
-    char s;
+    char c = '\0';
     setlocale (0,"Rus");
 
     while(k != 3){
         b = false;
         cout << endl <<"Анализатор выражения:" << endl << "1 - чтение из файла, 2 - ввод с клавиатуры, 3 - выход из программы." << endl;
         cin >> k;
-        if(!isalnum(k)){ Error(8); return 0; }
 
         switch (k) {
         case 1:{
+            strstream x;
             cout << "Введите имя файла" << endl;
             cin >> str;
-            ifstream infile(str);
-            if (!infile) { cout << "Входной файл не открыт!" << endl; break; }
-            if(infile>>s)
-            {
-                cout<<s;
-                s = Tilda(infile, s);
-                b = Logical(infile, s);
+            ifstream outfile(str);
+            if (!outfile) { cout << "Входной файл не открыт!" << endl; break; }
+            outfile.read(str0, 1000);
+            outfile.close();
+            str = Space(str0);
+            x << str;
+            if(x >> word){
+                cout << word << " ";
+                word = Not(x, word);
+                if(word[0] && word[0] != '('){ Error(2); return 0; }
+                b = Logical(x, word);
             }
             else { Error(0); b = false; }
-            if(infile>>s && b){ Error(1); b = false; }
+            x >> c;
+            if(c != '\0' && b){ Error(1); b = false; }
             break;
         }
         case 2:{
             cout << "Введите строку" << endl;
-            cin.getline(str1, 1);
-            cin.getline(str, 1000);
-            ofstream fout("expression");
-            fout << str;
-            fout.close();
-            ifstream infile("expression");
-            if (!infile) { cout << "Входной файл не открыт!" << endl; break; }
-            if(infile>>s)
+            cin.get();
+            cin.getline(str0, 1000);
+            strstream x;
+            str = Space(str0);
+
+            x << str;
+            if(x >> word)
             {
-                cout<<s;
-                s = Tilda(infile, s);
-                b = Logical(infile, s);
+                cout << word << " ";
+                word = Not(x, word);
+                if(word[0] != '\0' && word[0] != '('){ Error(2); break; }
+                if(word[0] == '\0'){ Error(0); break; }
+                b = Logical(x, word);
             }
             else { Error(0); b = false; }
-            if(infile>>s && b){ Error(1); b = false; }
+            x >> c;
+            if(c != '\0' && b){ Error(1); b = false; }
 
-            remove("expression");
             break;
         }
         case 3: break;
@@ -81,81 +87,107 @@ int main ()
             else cout <<"НЕТ, ЭТО НЕ ВЫРАЖЕНИЕ!" << endl;
         }
     }
-
-
     return 0;
 }
 
 
-bool Logical (ifstream &infile, char s){
-    if(s == '(')
+bool Logical (strstream &x, string word){
+    if(word[0] == '(')
     {
-        if(infile>>s)
-        {
-                cout<<s;
-                s = Tilda(infile, s);
-                if(!Logical(infile, s))
-                    return false;
+        if(x >> word){
+            cout << word << " ";
+            word = Not(x, word);
+            if(word[0] == '('){
+                if(!Logical(x, word)) return false;
+            }
+            else{
+                if(!Logical(x, word)) return false;
+            }
         }
         else{ Error(7); return false; }
 
-        if(infile>>s)
-        {
-            cout<<s;
-            s = Tilda(infile, s);
-            if(!Mark(s)){ Error(5); return false; }
+        if(x >> word){
+            cout << word << " ";
+            word = Not(x, word);
+            if(!Mark(word)) return false;
         }
         else{ Error(5); return false; }
-        if(infile>>s)
-        {
-            cout<<s;
-            s = Tilda(infile, s);
-            if(!Logical(infile, s))
-                    return false;
+
+        if(x >> word){
+            cout << word << " ";
+            word = Not(x, word);
+            if(!Logical(x, word)) return false;
         }
-        else{ Error(5); return false; }
-        if(infile>>s)
-        {
-            cout<<s;
-            s = Tilda(infile, s);
-            if (s == ')')
-                return true;
-            else{ Error(4); return false; }
+        else{ Error(7); return false; }
+
+        if(x >> word){
+            cout << word << " ";
+            if(word[0] == ')') return true;
         }
         else{ Error(4); return false; }
+
         }
-    else if(isalpha(s) || (s == '0') || (s == '1'))
-        return true;
+    if((isalpha(word[0]) && word.length() == 1)) return true;
+    if((word == "FALSE") || (word == "TRUE")) return true;
     else{ Error(7); return false; }
 }
 
 
-bool Mark (char s){
-    if((s == '^') || (s == '|')) return true;
+bool Mark (string word){
+    if(word[0] == '\0') return false;
+    if((word == "AND") || (word == "OR")) return true;
     else{ Error(5); return false; }
 }
 
-char Tilda(ifstream &infile, char s){
-    if( s == '~' ){
-        if((infile >> s) && (s != '^') && (s != '|') && (s != '~')) { cout << s; return s; }
-        else Error(3);
+string Not(strstream &x, string word){
+    if( word == "NOT" ){
+        if(x >> word){
+            if((word == "AND") || (word == "OR")){ Error(8); word[0] = '\0'; return word; }
+            cout << word << " "; return word;
+
+        }
+        else{  Error(3); word[0] = '\0'; return word; }
     }
-    return s;
+    return word;
 }
 
-void Error (short k)
-{
+string Space(char str0[]){
+    int i = 0, k = 0;
+    string str1;
+    char str[1000];
+    while(str0[i] != '\0'){
+        if(str0[i] == '(' || str0[i] == ')'){
+            str[k] = ' ';
+            str[k+1] = str0[i];
+            str[k+2] = ' ';
+            k += 3;
+            i++;
+        }
+        else{
+            if(str0[i] == '\n') break;
+            str[k] = str0[i];
+            i++;
+            k++;
+        }
+    }
+    str[k] = '\0';
+    str1 = str;
+    return str1;
+}
+
+
+void Error(short k){
     cout << endl << "err#" << k << endl;
     switch (k) {
     case 0: cout << "! - Пустая входная строка" << endl; break;
     case 1: cout << "! - Лишние символы во входной строке" << endl; break;
     case 2: cout << "! - Недопустимый начальный символ" << endl; break;
-    case 3: cout << "! - Отсутствует выражение после '~'." << endl; break;
+    case 3: cout << "! - Отсутствует выражение после NOT." << endl; break;
     case 4: cout << "! - Отсутствует ')'" << endl; break;
     case 5: cout << "! - Отсутствует знак операции" << endl; break;
     case 6: cout << "! - Неверный выбор способа ввода." << endl; break;
-    case 7: cout << "! - Отсутствует выражение" << endl; break;
-    case 8: cout << "! - Неверный выбор способа ввода" << endl; break;
+    case 7: cout << "! - Отсутствует простое логическое" << endl; break;
+    case 8: cout << "! - Недопустимо отрицание операции" << endl; break;
     default : cout << "! - ...";break;
     };
 }
