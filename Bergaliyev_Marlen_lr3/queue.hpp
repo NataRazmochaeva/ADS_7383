@@ -4,6 +4,7 @@ template <class T>
 class Queue{
 public:
     Queue(unsigned int);
+    unsigned int get_size();
     void push(T);
     void resize(unsigned int);
     bool isEmpty();
@@ -22,6 +23,11 @@ Queue<T>::Queue(unsigned int size) : vsize(size), qsize(0) {
     vstart = new T[size];
     qstart = vstart;
     qend = vstart;
+}
+
+template <class T>
+unsigned int Queue<T>::get_size(){
+    return qsize;
 }
 
 template <class T>

@@ -7,11 +7,27 @@ void rewrite(std::istream &fin, std::ostream &fout){
     std::string input;
     while(!fin.eof()){
 	getline(fin, input);
-	for(auto i : input)
+	for(auto i : input){
 	    if(i > '9' || i < '0')
 		other.push(i);
 	    else
 		numbers.push(i);
+	    unsigned char c;
+	    std::cout << "numbers: ";
+	    for(int j=0; j<numbers.get_size(); ++j){
+		c = numbers.pop();
+	    	std::cout << c;
+		numbers.push(c);
+	    }
+	    std::cout << std::endl;
+	    std::cout << "other: ";
+	    for(int j=0; j<other.get_size(); ++j){
+		c = other.pop();
+	    	std::cout << c;
+		other.push(c);
+	    }
+	    std::cout << std::endl << std::endl;
+	}
 	while(!other.isEmpty())
 	    fout << other.pop();
 	while(!numbers.isEmpty())
