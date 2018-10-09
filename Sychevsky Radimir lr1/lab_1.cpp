@@ -34,20 +34,25 @@ int sort_v(int *arr, int n){
 }
 
 void work_with_console(){
-    int n;
-    int *arr = new int[n];
-    cout << "введите количество элементов массива" << endl;
-    cin >> n;
-    if (n<=0){
-        cout << "неверное количество" << endl;
-        return;
-    }
+    int size = 5;
+    int k = 0;
+    int *arr_a = new int[size];
     cout << "введите массив" << endl;
-    for(int i = 0; i < n; i++)
-        cin >> *(arr+i);
-    sort_v(arr, n);
-    for(int i = 0; i < n; i++)
-        cout << *(arr+i) << " ";
+    while(cin >> *(arr_a + k) && std::cin.peek() != '\n'){
+        k++;
+        if(k == size){
+            size = size + 5;
+            int *tmp = new int[size];
+            for(int i = 0; i < k; i++)
+                tmp[i]=arr_a[i];
+            delete [] arr_a;
+            arr_a = tmp;
+        }
+    }
+    sort_v(arr_a, k);
+    for(int i = 0; i <= k; i++)
+        cout << *(arr_a+i) << " ";
+    delete [] arr_a;
 }
 
 void work_with_file(){
