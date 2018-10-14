@@ -14,15 +14,58 @@ bool Figure (char **buf, char s);
 bool Square (char **buf, char s);
 void Error (short k);
 
-void Load ( char *filename, char *buf )
+char *Read_str (istream *stream)
+{
+    
+    char *str, c;
+    int size = 20; // размер стоки str
+    str = new char[size];
+    for (int i = 0;  (*stream).get(c); i++){
+		if (c == '\n') // конец ввода строки
+    		break;
+    	if (i == size){ // когда i-ый символ уже не влезет в str
+    		char *new_str = new char[2 * size];
+			for (size_t l = 0; l < size; ++l)
+    			new_str[l] = str[l];
+    		size *= 2;
+  	    	delete [] str;
+    	  	str = new_str;
+    	}
+   		str[i] = c;
+   	}
+   	return str;
+}
+
+char *Read_str (ifstream *stream) // перегружаем функцию, чтобы она работала как для потоков istream, так и для потоков ifstream
+{
+    
+    char *str, c;
+    int size = 20; // размер стоки str
+    str = new char[size];
+    for (int i = 0;  (*stream).get(c); i++){
+		if (c == '\n') // конец ввода строки
+    		break;
+    	if (i == size){ // когда i-ый символ уже не влезет в str
+    		char *new_str = new char[2 * size];
+			for (size_t l = 0; l < size; ++l)
+    			new_str[l] = str[l];
+    		size *= 2;
+  	    	delete [] str;
+    	  	str = new_str;
+    	}
+   		str[i] = c;
+   	}
+   	return str;
+}
+
+char *Load ( char *filename)
 {
     ifstream infile (filename);
-    if (!infile) cout << "Входной файл не открыт" << endl;
-    else {
-        cout << "Входной файл открыт" << endl;
-        infile.getline(buf, 100);
-        infile.close();
-   }  
+    char c, *buf;
+    buf = Read_str(&infile);
+    infile.close();
+    return buf;
+   
 }
 
 void PrintAnsw(char *exp)
@@ -36,7 +79,7 @@ void PrintAnsw(char *exp)
 void UserInterface ()
 {
     int key;
-    char exp[100] = {0};
+    char *exp;
     while (true) {
         cout << "Выбери действие:" << endl;
         cout << "0. Завершить выполнение;" << endl;
@@ -51,22 +94,26 @@ void UserInterface ()
             case 1:
             {
                 cout << "input file name: ";
-                char filename[20];
-                cin >> filename;
-                Load(filename, exp);
+                char *filename, c;
+                cin.get(c);
+                filename = Read_str(&cin);
+                exp = Load(filename);
                 PrintAnsw(exp);
+                delete [] filename;
             } 
             break;
             case 2:
             {
-                Load("in_seq5.txt", exp);
+                exp = Load("in_seq5.txt");
                 PrintAnsw(exp);
             } 
             break;
             case 3:
             {
+            	char c, *exp;
                 cout << "input expression: ";
-                cin >> exp;
+                cin.get(c);
+                exp = Read_str(&cin);
                 PrintAnsw(exp);
             } 
             break;
@@ -78,6 +125,7 @@ void UserInterface ()
             // ?
         };
     }
+    delete [] exp;
 }
 
 
