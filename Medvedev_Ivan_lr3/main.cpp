@@ -52,6 +52,11 @@ int main(){
         }
         while (i >= 0){
 
+			if(prefix[i] == ' '){
+				i--;
+				continue;
+			}
+
             if(isalpha(infix[i]) || isdigit(infix[i])){
                 ans.insert(0, 1, infix[i]);
                 if(!isalpha(infix[i-1]) && !(isdigit(infix[i-1])))
