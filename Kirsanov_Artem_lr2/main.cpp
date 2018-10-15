@@ -53,7 +53,7 @@ int main()
             write_lisp (s);
         }
         else cout << "No replacement items found." << endl;
-        cout << endl;
+		cout << endl;
         destroy(s);
         s = NULL;
     }

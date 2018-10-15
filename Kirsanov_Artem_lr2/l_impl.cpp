@@ -7,8 +7,8 @@ namespace h_list
     bool rep(lisp s, base x, base y){
         if(isNull(s)) return false;
         if(isAtom(s)){
-             if(getAtom(s) == x){  s->node.atom = y; return true; }
-             return false;
+            if(getAtom(s) == x){  s->node.atom = y; return true; }
+            return false;
         }
         else return  rep(head(s), x, y) + rep(tail(s), x, y);
     }
@@ -25,7 +25,6 @@ namespace h_list
 	{	if(s == NULL) return false;
         else return (s -> tag);
         }
-
         bool isNull (const lisp s)
         { return s==NULL;
 	}
@@ -70,7 +69,6 @@ namespace h_list
                 destroy ( tail(s));
             }
             delete s;
-            // s = NULL;
         };
 	}
 
@@ -80,7 +78,7 @@ namespace h_list
 		else return (s->node.atom);
 	}
 
-    void read_lisp ( lisp& y, strstream &st) // ввод списка с консоли
+    void read_lisp ( lisp& y, strstream &st)
     {	base x = 0;
 
         do{ st >> x; } while (x==' ');
@@ -89,10 +87,10 @@ namespace h_list
     }
 
     void read_s_expr (base prev, lisp& y, strstream &st)
-	{ //prev - ранее прочитанный символ}
+    {
 		if ( prev == ')' ) {cerr << " ! List.Error 1 " << endl; exit(1); } 
 		else if ( prev != '(' ) y = make_atom (prev);
-             else read_seq (y, st);
+            else read_seq (y, st);
     }
 
     void read_seq ( lisp& y, strstream &st)
@@ -111,20 +109,19 @@ namespace h_list
 		}
     }
 
-    // ѕроцедура вывода списка с обрамл€ющими его скобками - write_lisp,
-    // а без обрамл€ющих скобок - write_seq
+
 	void write_lisp (const lisp x)
     {
     if (isNull(x)) cout << " ()";
-	else if (isAtom(x)) cout << ' ' << x->node.atom;
-        else  { //непустой список
+    else if (isAtom(x)) cout << ' ' << x->node.atom;
+        else{
 			cout << " (" ;
 			write_seq(x);
 			cout << " )";
 		}
     }
 
-    void write_seq (const lisp x) //выводит последовательность элементов списка без обрамл€ющих его скобок
+    void write_seq (const lisp x)
     {
         if (!isNull(x)) {
             write_lisp(head (x));

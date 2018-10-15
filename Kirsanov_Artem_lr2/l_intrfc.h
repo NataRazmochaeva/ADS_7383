@@ -1,4 +1,3 @@
-// интерфейс АТД "Иерархический Список"
 #include <strstream>
 #define N 1000
 using namespace std;
