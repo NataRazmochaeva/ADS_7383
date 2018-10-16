@@ -1,18 +1,17 @@
 #include "func.hpp"
 
 void starter(istream &is){
-    lisp s1, s2, s3;
+    lisp s1;
     read_lisp (s1, is);
-    cout << "введен list1: " << endl;
+    cout << "Считан Иерархический список: " << endl;
     write_lisp (s1);
     cout<<endl;
-    s2 = linelist (s1);
-    write_lisp (s2);
+    s1 = linelist (s1);
+    cout << "Сформирован линейный список: " << endl;
+    write_lisp (s1);
     cout << endl;
-    s3=s1;
-    cout << "Элементов в списке: " <<evade(s2)<<endl;
-    cout << "destroy list1, list2: " << endl;
-    del (s2);
+    cout << "Элементов в списке: " <<evade(s1)<<endl;
+    cout << "destroy list: " << endl;
     del(s1);
 }
 

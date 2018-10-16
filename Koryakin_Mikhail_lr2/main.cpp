@@ -21,7 +21,7 @@ int main ( )
     try{
         switch(m){
             case 1:{
-                cout << "введите list1:" << endl;
+                cout << "Введите список:" << endl;
                 getline(cin, temp_str);
                 istream is(&exp);
                 exp.str(temp_str);
