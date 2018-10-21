@@ -286,8 +286,10 @@ int main() {
 		case 1: {
 			cout << "Enter the first line :" << '\n';
 			getline(cin, str1);
-      istringstream ss1(delet(str1));
-			if (!Check(ss1)) {
+      str1=delet(str1);
+      istringstream ss1(str1);
+      istringstream t(str1);
+			if (!Check(t)) {
 				cout << "Error\n";
         sw_var=4;
 				break;
@@ -295,8 +297,10 @@ int main() {
 			read_lisp(*f, ss1);
 			cout << "Enter the second line :" << '\n';
 			getline(cin, str2);
-			istringstream ss2(delet(str2));
-			if (!Check(ss2)) {
+      str2=delet(str2);
+			istringstream ss2(str2);
+      istringstream c(str2);
+			if (!Check(c)) {
 				cout << "Error\n";
         sw_var=4;
 				break;
@@ -316,9 +320,21 @@ int main() {
 			else {
 				getline(file, str1);
 				istringstream ss1(delet(str1));
+        istringstream t(str1);
+  			if (!Check(t)) {
+  				cout << "Error\n";
+          sw_var=4;
+  				break;
+  			}
 				read_lisp(*f, ss1);
 				getline(file, str2);
 				istringstream ss2(delet(str2));
+        istringstream c(str2);
+  			if (!Check(c)) {
+  				cout << "Error\n";
+          sw_var=4;
+  				break;
+  			}
 				read_lisp(*s, ss2);
 				sw_var = print(isEqual_lisp(*f, *s), sw_var);
 				file.close();
