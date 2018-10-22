@@ -1,11 +1,11 @@
-all: main.o fun.o
-	gcc main.o fun.o -o lr2
+all: main.o list.o
+	g++ main.o list.o -o lr2
 
-main.o: main.c fun.c
-	gcc -c main.c
+main.o: main.cpp list.cpp
+	g++ -c main.cpp
 
-fun.o: fun.c fun.h
-	gcc -c fun.c
+list.o: list.cpp list.h
+	g++ -c list.cpp
 
 clean:
 	rm *.o lr2
