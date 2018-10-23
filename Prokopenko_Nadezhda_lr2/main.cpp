@@ -8,16 +8,19 @@
 
 using namespace std;
 
-typedef char* base;      // базовый тип элементов (атомов)
+typedef char base;      // базовый тип элементов (атомов)
+
+struct s_expr ;// true: atom, false: pair
+struct two_ptr {
+            s_expr *hd;
+            s_expr *tl;
+};
 
 struct s_expr {
     bool tag; // true: atom, false: pair
     union {
         base atom;
-        struct two_ptr {
-            s_expr *hd;
-            s_expr *tl;
-        } pair;
+        two_ptr  pair;
     } node;
 };
 
@@ -132,23 +135,15 @@ void read_s_expr(char prev, lisp& y, istringstream &ss) {
     int i = 0;
     char ch = prev;
     streampos oldpos;
-    base str = (base)calloc(30, sizeof(char));
-    if (prev == ')') {
+    if (prev == ')' ) {
       exit(1);
     } else if (prev != '(') {
-        while ( isalpha(ch) && ch != ')') {
-            str[i] = ch;
-            i++;
-            oldpos = ss.tellg();
-            ch=ss.get();
-            while (ch == ' ') {
-                ch=ss.get();
+        if ( isalpha(ch) ) {
+            y=make_atom(ch);
             }
-        }
         if (ch == ')') {
            ss.seekg(oldpos);
         }
-        y = make_atom(str);
     } else {
         read_seq(y, ss);
     }
@@ -210,24 +205,23 @@ base getAtom(const lisp s) {
 }
 
 bool isEqual_lisp(const lisp f, const lisp s) {
-
-    if (isNull(f) && isNull(s)) {
-        return true;
-    } else if ((!isAtom(f) && isAtom(s)) || (isAtom(f) && !isAtom(s)))
+  bool s1=isAtom(f);
+  bool s2=isAtom(s);
+    if (s1 !=s2)
       return false;
-     else if(!isAtom(f) && !isAtom(s)) {
+    if(!s1 && !s2) {
         return isEqual_seg(f, s);
-    }else if(isAtom(f) && isAtom(s))
+    }else
       return true;
-    else return false;
 }
 
 bool isEqual_seg(const lisp f, const lisp s) {
-
-    if (!isNull(f) && !isNull(s)) {
+  bool s1=isNull(f);
+  bool s2=isNull(s);
+    if (!s1 && !s2 ){
         return isEqual_lisp(head(f), head (s)) && isEqual_seg(tail(f), tail(s));
     }
-    return isNull(f) && isNull(s);
+    return s1 && s2;
 }
 
 int print(bool result, int sw_var){
