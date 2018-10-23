@@ -12,13 +12,10 @@ namespace h_list
         }
         else return  rep(head(s), x, y) + rep(tail(s), x, y);
     }
-    lisp head (const lisp s) // PreCondition: not null (s)
+
+    lisp head (const lisp s)
     {
-		if (s != NULL) if (!isAtom(s))	return s->node.pair.hd;
-			else { cerr << "Error: Head(atom) \n"; exit(1); }
-		else { cerr << "Error: Head(nil) \n";
-			exit(1);
-		}
+        return s->node.pair.hd;
 	}
 
 	bool isAtom (const lisp s)
@@ -29,29 +26,26 @@ namespace h_list
         { return s==NULL;
 	}
 
-    lisp tail (const lisp s)// PreCondition: not null (s)
+    lisp tail (const lisp s)
     {
-		if (s != NULL) if (!isAtom(s))	return s->node.pair.tl;
-			else { cerr << "Error: Tail(atom) \n"; exit(1); }
-		else { cerr << "Error: Tail(nil) \n";
-			exit(1);
-		}
-	}
+        return s->node.pair.tl;
+    }
 
-    lisp cons (const lisp h, const lisp t) // PreCondition: not isAtom (t)
-	{lisp p;
-	if (isAtom(t)) { cerr << "Error: Tail(nil) \n"; exit(1);}
-        else {
-            p = new s_expr;
-            if ( p == NULL)	{cerr << "Memory not enough\n"; exit(1); }
-            else {
-                p->tag = false;
-                p->node.pair.hd = h;
-                p->node.pair.tl = t;
-                return p;
-            }
-        }
-	}
+    base getAtom (const lisp s)
+    {
+        return s->node.atom;
+    }
+
+    lisp cons (const lisp h, const lisp t)
+    {lisp p;
+
+        p = new s_expr;
+        p->tag = false;
+        p->node.pair.hd = h;
+        p->node.pair.tl = t;
+        return p;
+
+    }
 
 	lisp make_atom (const base x)
 	{	lisp s;
@@ -72,33 +66,26 @@ namespace h_list
         };
 	}
 
-	base getAtom (const lisp s)
-	{
-		if (!isAtom(s)) { cerr << "Error: getAtom(s) for !isAtom(s) \n"; exit(1);}
-		else return (s->node.atom);
-	}
-
     void read_lisp ( lisp& y, strstream &st)
     {	base x = 0;
-
-        do{ st >> x; } while (x==' ');
+        if(!(st >> x)) throw 3;
+        while (x==' '){ st >> x; }
         if(x)
             read_s_expr (x, y, st);
     }
 
     void read_s_expr (base prev, lisp& y, strstream &st)
     {
-		if ( prev == ')' ) {cerr << " ! List.Error 1 " << endl; exit(1); } 
-		else if ( prev != '(' ) y = make_atom (prev);
-            else read_seq (y, st);
+        if(prev == ')') throw 1;
+        if ( prev != '(' ) y = make_atom (prev);
+        else read_seq (y, st);
     }
 
     void read_seq ( lisp& y, strstream &st)
 	{	base x; 
 		lisp p1, p2;
 
-        if (!(st >> x)) {cerr << " ! List.Error 2 " << endl; exit(1);}
-		else {
+            if(!(st >> x)) throw 2;
             while  ( x==' ' ){ st >> x; }
 			if ( x == ')' ) y = NULL;
 			else {
@@ -106,14 +93,12 @@ namespace h_list
                 read_seq ( p2, st);
 				y = cons (p1, p2);
 			} 
-		}
     }
 
 
 	void write_lisp (const lisp x)
     {
-    if (isNull(x)) cout << " ()";
-    else if (isAtom(x)) cout << ' ' << x->node.atom;
+        if (isAtom(x)) cout << ' ' << x->node.atom;
         else{
 			cout << " (" ;
 			write_seq(x);
@@ -126,6 +111,14 @@ namespace h_list
         if (!isNull(x)) {
             write_lisp(head (x));
             write_seq(tail (x));
+        }
+    }
+
+    void Error(int a){
+        switch (a) {
+            case 1:{ cout << "no expression before ')'" << endl; break; }
+            case 2:{ cout << "no ')'" << endl; break; }
+            case 3:{ cout << "empty expression" << endl; break; }
         }
     }
 }

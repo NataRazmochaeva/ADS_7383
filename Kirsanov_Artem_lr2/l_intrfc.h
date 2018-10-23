@@ -38,7 +38,7 @@ namespace h_list
     void read_seq ( lisp& y, strstream &st);
 	
     void write_lisp (const lisp x);
-	void write_seq (const lisp x);  
-	
+    void write_seq (const lisp x);
+    void Error(int a);
 
 }

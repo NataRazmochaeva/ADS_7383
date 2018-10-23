@@ -35,14 +35,19 @@ int main()
                 cout << "Enter a list:" << endl;
                 cin.get();
                 cin.getline(str, N);
-                cout << "List entered: " << endl;
+
                 st << str;
                 break;
             }
             case 3:{ cout << "Press Enter\n"; return 0; }
         }
 
-        read_lisp(s, st);
+        try { read_lisp(s, st); }
+        catch(int a){
+            Error(a);
+            continue;
+        }
+        cout << "List entered: " << endl;
         write_lisp (s);
         cout << endl;
         cout << "Enter x y\n";
