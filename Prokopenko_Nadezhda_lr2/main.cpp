@@ -141,9 +141,6 @@ void read_s_expr(char prev, lisp& y, istringstream &ss) {
         if ( isalpha(ch) ) {
             y=make_atom(ch);
             }
-        if (ch == ')') {
-           ss.seekg(oldpos);
-        }
     } else {
         read_seq(y, ss);
     }
