@@ -24,14 +24,14 @@ typedef s_expr *lisp;
 
 lisp head (const lisp s);
 lisp tail (const lisp s);
-lisp cons (const lisp h, const lisp t, bool &b);
+lisp cons (const lisp h, const lisp t);
 lisp make_atom (const base x);
 bool isAtom (const lisp s);
 bool isNull (const lisp s);
 void destroy (lisp s);
-void read_lisp ( lisp& y, bool &b, stringstream &xstream);
-void read_s_expr (base prev, lisp& y, bool &b, stringstream &xstream);
-void read_seq ( lisp& y, bool &b, stringstream &xstream);
+void read_lisp ( lisp& y, stringstream &xstream);
+void read_s_expr (base prev, lisp& y, stringstream &xstream);
+void read_seq ( lisp& y, stringstream &xstream);
 void write_lisp (const lisp x);
 void write_seq (const lisp x);
 
@@ -80,12 +80,13 @@ int main()
                 cin.get();
                 cin.getline(str0, 1000);
                 xstream << str0;
-                read_lisp(s, b, xstream);
                 break;
             }
             case 2:
             {
                 b = 1;
+		cout<<"Введите искомый элемент\n";
+		cin>>x;
                 ifstream outfile;
                 outfile.open("test.txt");
                 if (!outfile)
@@ -97,7 +98,6 @@ int main()
                 outfile.read(str0, 1000);
                 outfile.close();
                 xstream << str0;
-                read_lisp (s, b, xstream);
                 break;
             }
             case 3:
@@ -111,6 +111,20 @@ int main()
                 break;
             }
         }
+	try
+	{
+	    read_lisp (s, xstream);
+	}
+	catch(int a)
+	{
+	    b = 0;
+	    switch(a){
+		case 1:cerr << "Memory not enough\n"; break;
+		case 2:cerr << "Error: the initial brace is closing\n"; break;
+		case 3:cerr << "Error: there is no closing bracket\n"; break;
+	    }
+	    continue;
+	}
         if(b)
         {
             cout << "Введен list1: \n";
@@ -160,18 +174,11 @@ lisp tail(const lisp s)
     }
 }
 
-lisp cons(const lisp h, const lisp t, bool &b)
+lisp cons(const lisp h, const lisp t)
 {
-    if (b == 0)
-         return NULL;
     lisp p;
     p = new s_expr;
-    if ( p == NULL)
-    {
-        cerr << "Memory not enough\n";
-        b = 0;
-        return NULL;
-    }
+    if ( p == NULL) throw 1;
     else {
         p->tag = false;
         p->node.pair.hd = h;
@@ -204,45 +211,31 @@ void destroy (lisp s)
     }
 }
 
-void read_lisp ( lisp& y, bool &b, stringstream &xstream)
+void read_lisp ( lisp& y, stringstream &xstream)
 {
     base x;
     do
         xstream >> x;
     while (x==' ');
     if(x)
-        read_s_expr ( x, y, b, xstream);
+        read_s_expr ( x, y, xstream);
 }
 
-void read_s_expr (base prev, lisp& y, bool &b, stringstream &xstream)
+void read_s_expr (base prev, lisp& y, stringstream &xstream)
 {
-    if (b == 0)
-         return;
-    if ( prev == ')' )
-    {
-        cerr << "Error: the initial brace is closing\n";
-        b = 0;
-        return;
-    }
+    if ( prev == ')' ) throw 2;
     else
         if ( prev != '(' )
             y = make_atom (prev);
-         else read_seq (y, b, xstream);
+         else read_seq (y, xstream);
 }
 
-void read_seq ( lisp& y, bool &b, stringstream &xstream)
+void read_seq ( lisp& y, stringstream &xstream)
 {
-    if (b == 0)
-         return;
     base x;
     lisp p1, p2;
 
-    if (!(xstream >> x))
-    {
-        cerr << "Error: there is no closing bracket\n";
-        b = 0;
-        return;
-    }
+    if (!(xstream >> x)) throw 3;
     else
     {
         while  ( x==' ' )
@@ -251,9 +244,9 @@ void read_seq ( lisp& y, bool &b, stringstream &xstream)
             y = NULL;
         else
         {
-            read_s_expr ( x, p1, b, xstream);
-            read_seq ( p2, b, xstream);
-            y = cons (p1, p2, b);
+            read_s_expr ( x, p1, xstream);
+            read_seq ( p2, xstream);
+            y = cons (p1, p2);
         }
     }
 }
