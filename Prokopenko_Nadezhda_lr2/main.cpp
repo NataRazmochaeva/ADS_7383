@@ -15,7 +15,6 @@ struct s_expr {
     union {
         base atom;
         struct two_ptr {
-
             s_expr *hd;
             s_expr *tl;
         } pair;
