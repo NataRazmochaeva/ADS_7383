@@ -7,6 +7,9 @@
 using namespace std;
 
 template <class T>
+class Queue;
+
+template <class T>
 class BT{
 private:
     BT* left;
@@ -15,9 +18,83 @@ private:
 
 public:
     BT(stringstream& s);
-    int height();
+    void print (Queue<T> &q);
     ~BT();
 };
+
+template <class T>
+struct El{
+    BT<T>* elem;
+    El* next;
+    El(BT<T>* elem)
+    {
+        this->elem = elem;
+        next = NULL;
+    };
+};
+
+template <class T>
+class Queue{
+private:
+    El<T>* out;
+    El<T>* in;
+public:
+    Queue();
+    bool isEmpty();
+    void push(BT<T>* el);
+    BT<T>* pop();
+};
+
+template <class T>
+Queue<T>::Queue()
+{
+    out = NULL;
+    in = NULL;
+}
+
+template <class T>
+bool Queue<T>::isEmpty()
+{
+    return (out ? false : true);
+}
+
+template <class T>
+void Queue<T>::push(BT<T>* el)
+{
+    if (in)
+    {
+        in->next = new El<T>(el);
+        in = in->next;
+    }
+    else
+    {
+        in = new El<T>(el);
+    }
+    if (!out)
+        out = in;
+}
+
+template <class T>
+BT<T>* Queue<T>::pop()
+{
+    El<T>* tmp = out;
+    BT<T>* ans = out->elem;
+    if (out == in)
+        in = NULL;
+    out = out->next;
+    delete tmp;
+    return ans;
+}
+
+template <class T>
+void BT<T>::print (Queue<T> &q)
+{
+    if (left)
+        q.push(left);
+    if (right)
+        q.push(right);
+    cout << value;
+}
 
 template <class T>
 BT<T>::BT(stringstream& s)
@@ -27,7 +104,7 @@ BT<T>::BT(stringstream& s)
     char ch;
     if (s.peek() == '(')
         s >> ch; // remove '('
-    s >> this->value;
+    s >> value;
     switch(s.peek())
     {
         case '(':
@@ -46,19 +123,6 @@ BT<T>::BT(stringstream& s)
         s >> ch; // remove '#'
     if (s.peek() == ')')
         s >> ch; // remove ')'
-}
-
-template <class T>
-int BT<T>::height()
-{
-    if (!left && !right)
-        return 0;
-    int left_h = 0, right_h = 0;
-    if (left)
-        left_h = left->height();
-    if (right)
-        right_h = right->height();
-    return (left_h > right_h ? left_h : right_h) + 1;
 }
 
 template <class T>
@@ -104,10 +168,17 @@ void run(string str)
             return;
         }
     }
-    cout << str1;
+    cout << str1 << endl;
     s << str;
-    BT<int> el(s);
-    cout << " maximum path length is " << el.height() << endl;
+    BT<int>* el = new BT<int>(s);
+    Queue<int> q;
+    q.push(el);
+    while (!q.isEmpty())
+    {
+        BT<int>* tmp = q.pop();
+        tmp->print(q);
+    }
+    cout << endl;
 }
 
 
