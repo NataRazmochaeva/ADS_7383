@@ -2,7 +2,7 @@ CXX=g++
 RM=rm -f
 LDFLAGS=-g -Wall
 
-SRCS=main.cpp action.cpp binkor.cpp
+SRCS=main.cpp binkor.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: main
@@ -12,9 +12,7 @@ main: $(OBJS)
 
 main.o: main.cpp main.h
 
-action.o: action.cpp action.h
-
-binkor.o: binkor.cpp binkor.h
+binom.o: binkor.cpp binkor.h
 
 clean:
 	$(RM) $(OBJS)

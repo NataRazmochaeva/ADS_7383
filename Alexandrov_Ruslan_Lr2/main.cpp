@@ -1,8 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include "main.h"
-#include "action.h"
+#include "binkor.h"
+
 using namespace std;
 
 void Main::fileRead() {
@@ -20,9 +22,19 @@ void Main::fileRead() {
         cout << endl;
         return;
     }
+    stringstream xstream;
     while (!inFile.eof()) {
         getline(inFile, str);
-        action.start(str);
+        xstream << str;
+        BinKor::lisp s1;
+        binKor.read_lisp(s1, xstream);
+        int weight = binKor.getWeight(s1);
+        cout << "weight = " << weight << endl;
+        cout << "for list " << endl;
+        binKor.write_lisp(s1);
+        cout << endl;
+        cout<<endl;
+        binKor.destroy(s1);
     }
     inFile.close();
 }
@@ -32,7 +44,17 @@ void Main::consoleRead() {
     cout << "Enter string:" << endl;
     getline(cin, str); // remove '\n'
     getline(cin, str);
-    action.start(str);
+    stringstream xstream;
+    xstream << str;
+    BinKor::lisp s1;
+    binKor.read_lisp(s1, xstream);
+    int weight = binKor.getWeight(s1);
+    cout << "weight = " << weight << endl;
+    cout << "for list " << endl;
+    binKor.write_lisp(s1);
+    cout << endl;
+    cout<<endl;
+    binKor.destroy(s1);
 }
 
 void Main::menu() {

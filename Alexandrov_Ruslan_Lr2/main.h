@@ -1,11 +1,12 @@
 #pragma once
 
-#include "action.h"
+#include "binkor.h"
 
 class Main {
 private:
-    Action action;
+    BinKor binKor;
 public:
+    Main() {}
     unsigned int choice;
 
     void consoleRead();
