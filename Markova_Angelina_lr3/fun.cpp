@@ -117,9 +117,15 @@ string InfixToPostfix(string expression) {
         }
 // Иначе если символ является буквой или цифрой, записываем в преобразованную строку
         else if(IsOperand(expression[i])) {
-            postfix +=expression[i];
-            postfix+=" ";
-        }
+	    if(!IsOperand(expression[i+1])) { // проверка двух подряд операндов
+                postfix +=expression[i];
+                postfix+=" ";
+	    }
+	    else { 
+	        cerr<<"Error: incorrect input\n";
+	        exit(1);
+	    }
+        }	   
         else if (expression[i] == '(') {
             St.push(expression[i]);
         }
