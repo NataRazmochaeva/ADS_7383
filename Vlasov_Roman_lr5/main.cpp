@@ -121,7 +121,7 @@ int main()
             if (b == '\n')
                 if (f.peek() == EOF)
                     break;
-            for (char i = 7; i > 0; i--)
+            for (char i = 7; i >= 0; i--)
             {
                 if (tmp)
                     tmp = ((b & (1 << i)) == 0 ? tmp->get_left() : tmp->get_right());
