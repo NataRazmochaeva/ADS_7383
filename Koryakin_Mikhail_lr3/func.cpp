@@ -78,8 +78,10 @@
             int i = 0;
             string nuli = "null";
             while(str0[i]!='\0'){
-                if(str0[i]==',')
-                    return nuli;
+                if(str0[i]=='('){
+			if(str0[i+1]==')')
+				return nuli;
+		}   
                 i++;
             }
             return str0;
