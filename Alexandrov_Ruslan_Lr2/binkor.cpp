@@ -1,130 +1,151 @@
 #include <iostream>
+#include <cctype>
+#include <string>
 #include "binkor.h"
 
+using namespace std;
 
 BinKor::s_expr *BinKor::head(const lisp s) {
-    if (s != NULL) {
+    if (s != nullptr) {
         return s->node.pair.hd;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
 BinKor::s_expr *BinKor::tail(const lisp s) {
-    if (s != NULL) {
+    if (s != nullptr) {
         return s->node.pair.tl;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
 bool BinKor::isAtom(const lisp s) {
-    if (s == NULL)
+    if (s == nullptr)
         return false;
     else
         return (s->tag);
 }
 
 bool BinKor::isNull(const lisp s) {
-    return s == NULL;
+    return s == nullptr;
 }
 
 BinKor::lisp BinKor::cons(const lisp h, const lisp t) {
     lisp p;
     p = new s_expr;
-    if (p == NULL) {
-        cout << "Memory not enough" << endl;
-        return nullptr;
-    }
-    else {
-        p->tag = false;
-        p->node.pair.hd = h;
-        p->node.pair.tl = t;
-        return p;
-    }
+    p->tag = false;
+    p->node.pair.hd = h;
+    p->node.pair.tl = t;
+    return p;
 }
 
-BinKor::lisp BinKor::make_atom(const base x) {
+BinKor::lisp BinKor::makeAtom(const base x) {
     lisp s;
     s = new s_expr;
     s->tag = true;
-    s->node.atom = x;
+    s->node.weight = x;
     return s;
 }
 
-void BinKor::read_lisp(lisp &y, stringstream &xstream) {
-    base x;
-    do
-        xstream >> x;
-    while (x == ' ');
-    if (x)
-        read_s_expr(x, y, xstream);
+void BinKor::readLisp(lisp &y, string &str) {
+    int i = 0;
+    do {
+        if (str[i] == '(') outputString += '(';
+        i++;
+    } while (str[i] == ' ' && i < str.length());
+    if (str[i])
+        readSExp(y, str, i);
 }
 
-void BinKor::read_s_expr(base prev, lisp &y, stringstream &xstream) {
-    if (prev == ')')  {
-        cout << "Error: the initial brace is closing" << endl;
-        return;
-    }
-    else if (prev != '(') {
-        if (!isdigit(prev)) {
-            cout << "Element " << prev << " it isn`t a digit, try again";
-            exit(1);
+void BinKor::readSExp(lisp &y, string &str, int &iterator) {
+    if (str[iterator] == ')') {
+        throw string("Error: the initial brace is closing");
+    } else if (str[iterator] == '-') {
+        throw invalid_argument("Element less then zero");
+    } else if (str[iterator] != '(') {
+        if (!isdigit(str[iterator])) {
+            throw string("This list has not only numbers or brackets");
         }
-        y = make_atom(prev);
-    } else read_seq(y, xstream);
+        string num;
+        int atomWeight;
+        if (isdigit(str[iterator + 1])) {
+            while (isdigit(str[iterator])) {
+                num.push_back(str[iterator]);
+                iterator++;
+            }
+        }
+        if (num.empty() && str[iterator + 1] == ')') {
+            atomWeight = str[iterator] - '0';
+            iterator++;
+            outputString += to_string(atomWeight);
+            y = makeAtom(atomWeight);
+        } else if (str[iterator + 1] == ')') {
+            atomWeight = atoi(num.c_str());
+            outputString += to_string(atomWeight);
+            y = makeAtom(atomWeight);
+        } else {
+            if (num.empty()) {
+                outputString += to_string(str[iterator] - '0');
+            } else {
+                atomWeight = atoi(num.c_str());
+                outputString += to_string(atomWeight);
+            }
+            // if the number = length, an atom will be -1
+            y = makeAtom(-1);
+        }
+    } else {
+        if (str[iterator] == '(') outputString += ('(');
+        readSeq(y, str, iterator);
+    }
 }
 
-void BinKor::read_seq(lisp &y, stringstream &xstream) {
-    base x;
+void BinKor::readSeq(lisp &y, string &str, int &iterator) {
+    char ch;
     lisp p1, p2;
-
-    if (!(xstream >> x)) {
-        cout << "Error: there is no closing bracket" << endl;
-        return;
+    if (str[iterator] == ')' && iterator < str.length()) {
+        outputString += ')';
+    } else if (isspace(str[iterator])) {
+        outputString += ' ';
     }
-    else {
-        while (x == ' ')
-            xstream >> x;
-        if (x == ')') {
-            y = NULL;
+    if (!str[++iterator]) {
+        throw string("Error: there is no closing bracket");
+    } else {
+        // skip whitespaces
+        while (isspace(str[iterator]) && iterator < str.length()) {
+            iterator++;
+            if (outputString[outputString.length() - 1] != ' ') {
+                outputString += ' ';
+            }
+        }
+        // skip (
+        while (str[iterator] == '(' && iterator < str.length()) {
+            iterator++;
+            outputString += '(';
+        }
+        if (str[iterator] == ')') {
+            while (str[iterator] == ')' && iterator < str.length()) {
+                y = nullptr;
+                iterator++;
+                outputString += ')';
+            }
         } else {
-            read_s_expr(x, p1, xstream);
-            read_seq(p2, xstream);
+            readSExp(p1, str, iterator);
+            readSeq(p2, str, iterator);
             y = cons(p1, p2);
         }
     }
 }
 
-void BinKor::write_lisp(const lisp x) {
-    if (isNull(x))
-        cout << "()";
-    else if (isAtom(x))
-        cout << x->node.atom;
-    else {
-        cout << "(";
-        write_seq(x);
-        cout << ")";
-    }
-}
-
-void BinKor::write_seq(const lisp x) {
-    if (!isNull(x)) {
-        write_lisp(head(x));
-        write_seq(tail(x));
-    }
-}
-
 int BinKor::getWeight(const lisp x) {
     if (isAtom(x)) {
-        resultString.push_back(x->node.atom);
+//        resultString.push_back((char)x->node.weight);
+//        cout << "X node weight " << x->node.weight << endl;
+        if (x->node.weight != -1)
+            count += x->node.weight;
     } else {
-        resultString.push_back('(');
         getWeighHelper(x);
-        resultString.push_back(')');
-        if (resultString.at(resultString.size() - 1) == ')' && resultString.at(resultString.size() - 2) != ')') {
-            count += (resultString.at(resultString.length() - 2)) - '0';
-        }
     }
     return count;
 }
@@ -137,13 +158,17 @@ void BinKor::getWeighHelper(const lisp x) {
 }
 
 void BinKor::destroy(lisp s) {
-    resultString.clear();
+    outputString.clear();
     count = 0;
-    if (s != NULL) {
+    if (s != nullptr) {
         if (!isAtom(s)) {
             destroy(head(s));
             destroy(tail(s));
         }
         delete s;
     }
+}
+
+const string &BinKor::getOutputString() {
+    return outputString;
 }

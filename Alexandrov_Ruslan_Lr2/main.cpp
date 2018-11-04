@@ -22,19 +22,32 @@ void Main::fileRead() {
         cout << endl;
         return;
     }
-    stringstream xstream;
     while (!inFile.eof()) {
         getline(inFile, str);
-        xstream << str;
-        BinKor::lisp s1;
-        binKor.read_lisp(s1, xstream);
-        int weight = binKor.getWeight(s1);
-        cout << "weight = " << weight << endl;
-        cout << "for list " << endl;
-        binKor.write_lisp(s1);
+        BinKor::lisp lisp;
+        try {
+            binKor.readLisp(lisp, str);
+        } catch (invalid_argument e) {
+            cout << endl;
+            cout << "This list has an element less then zero" << endl;
+            cout << endl;
+            return;
+        } catch (string s) {
+            cout << endl;
+            cout << s << endl;
+            cout << endl;
+            return;
+        }
         cout << endl;
-        cout<<endl;
-        binKor.destroy(s1);
+        int weight = binKor.getWeight(lisp);
+        cout << "Weight = " << weight << endl;
+        if (weight != 0) {
+            cout << "Result list " << endl;
+            cout << binKor.getOutputString();
+            cout << endl;
+        }
+        cout << endl;
+        binKor.destroy(lisp);
     }
     inFile.close();
 }
@@ -44,17 +57,31 @@ void Main::consoleRead() {
     cout << "Enter string:" << endl;
     getline(cin, str); // remove '\n'
     getline(cin, str);
-    stringstream xstream;
-    xstream << str;
-    BinKor::lisp s1;
-    binKor.read_lisp(s1, xstream);
-    int weight = binKor.getWeight(s1);
-    cout << "weight = " << weight << endl;
-    cout << "for list " << endl;
-    binKor.write_lisp(s1);
+    BinKor::lisp lisp;
+
+    try {
+        binKor.readLisp(lisp, str);
+    } catch (invalid_argument e) {
+        cout << endl;
+        cout << "This list has an element less then zero" << endl;
+        cout << endl;
+        return;
+    } catch (string s) {
+        cout << endl;
+        cout << s << endl;
+        cout << endl;
+        return;
+    }
     cout << endl;
-    cout<<endl;
-    binKor.destroy(s1);
+    int weight = binKor.getWeight(lisp);
+    cout << "Weight = " << weight << endl;
+    if (weight != 0) {
+        cout << "Result list " << endl;
+        cout << binKor.getOutputString();
+        cout << endl;
+    }
+    cout << endl;
+    binKor.destroy(lisp);
 }
 
 void Main::menu() {
@@ -64,7 +91,6 @@ void Main::menu() {
 }
 
 int main() {
-    cout << "Hello! This program calculates the weight of the binary rocket" << endl;
     Main main;
 
     while (true) {

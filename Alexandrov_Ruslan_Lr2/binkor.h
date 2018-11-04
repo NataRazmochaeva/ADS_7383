@@ -6,7 +6,7 @@ using namespace std;
 
 class BinKor {
 public:
-    typedef char base;
+    typedef int base;
     struct s_expr;
     struct two_ptr {
         s_expr *hd;
@@ -15,7 +15,8 @@ public:
     struct s_expr {
         bool tag;
         union {
-            base atom;
+            base weight;
+            char atom;
             two_ptr pair;
         } node;
     };
@@ -27,8 +28,7 @@ public:
 
     lisp cons(const lisp h, const lisp t);
 
-    lisp make_atom(const base x);
-
+    lisp makeAtom(const base x);
 
     bool isAtom(const lisp s);
 
@@ -36,23 +36,19 @@ public:
 
     void destroy(lisp s);
 
-    void read_lisp(lisp &y, stringstream &xstream);
+    void readLisp(lisp &y, string &str);
 
-    void read_s_expr(base prev, lisp &y, stringstream &xstream);
+    void readSExp(lisp &y, string &str, int &iterator);
 
-    void read_seq(lisp &y, stringstream &xstream);
-
-    void write_lisp(const lisp x);
-
-    void write_seq(const lisp x);
-
+    void readSeq(lisp &y, string &str, int &iterator);
 
     int getWeight(const lisp x);
 
     void getWeighHelper(const lisp x);
 
+    const string &getOutputString();
 private:
+    string outputString;
     int count = 0;
-    string resultString;
 };
 
