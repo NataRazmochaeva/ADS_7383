@@ -1,5 +1,6 @@
 #include <iostream>
 #include "stack.h"
+#include "myexception.h"
 
 #define ARR_SIZE 10
 
@@ -23,7 +24,7 @@ syn_analyzer(istream& is_str, long size)
         else if(ch=='C')
         {
             if(st.is_empty())
-                throw "Where is x1? (Stack is empty)";
+                throw new analyzer_err("Where is x1? (Stack is empty)");
             while(!st.is_empty())
             {
                 if(is_str >> ch)
@@ -31,26 +32,24 @@ syn_analyzer(istream& is_str, long size)
                     if(st.pop()==ch)
                         flag = true;
                     else
-                        flag = false;
+                        throw new analyzer_err("x2 is not reversed x1!");
                     i++;
                 }
                 else
-                    throw "x2 is wrong! (x1 is greater)";
+                    throw new analyzer_err("x2 is wrong! (x1 is greater)");
             }
-            if(!flag)
-                throw "x2 is not reversed x1!";
         }
         else if(ch=='D')
         {
             if(!flag)
-                throw "D is before a,b,c,d-elements?";
+                throw new analyzer_err("D is before a,b,c,d-elements?");
             flag = false;
         }
         else
-            throw "Wrong character in string! (Not A, B, C or D)";
+            throw new analyzer_err("Wrong character in string! (Not A, B, C or D)");
     }
     if(!st.is_empty())
-        throw "There is no C in a,b,c,d-element!";
+        throw new analyzer_err("There is no C in a,b,c,d-element!");
     return flag;
 }
 

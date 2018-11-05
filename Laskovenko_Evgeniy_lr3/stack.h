@@ -85,7 +85,7 @@ template<class BASE>
 Stack<BASE>::~Stack<BASE>()
 {
     clear();
-    delete arr;
+    delete[] arr;
 }
 
 #endif // STACK_H

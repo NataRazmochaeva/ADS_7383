@@ -5,6 +5,7 @@
 #include <exception>
 #include "stack.h"
 #include "analyzer.h"
+#include "myexception.h"
 
 int
 main()
@@ -24,7 +25,10 @@ main()
             if(filename.empty())
                 break;
             if(!file.open(filename, ios::in))
-                throw 1;
+            {
+               file.close();
+               throw new client_err("Incorrect filename.");
+            }
 
             auto size = file.in_avail();
             char temp_ch;
@@ -40,32 +44,17 @@ main()
             cout << endl;
             file.close();
             if(!temp_str.size())
-                throw 2;
+                throw new client_err("Input file is empty.");
             str_buf.str(temp_str);
             temp_str.clear();
             if(syn_analyzer(is_str, str_buf.in_avail()))
                 cout << "It is an expression" << endl;
             else
-                throw 3;
+                throw new client_err("It isn't an expression!");
         }
-        catch (int exp)
+        catch (exception* ex)
         {
-            switch(exp)
-            {
-            case 1:
-                cout << "Input file isn't opened." << endl;
-                break;
-            case 2:
-                cout << "Input file is empty." << endl;
-                break;
-            case 3:
-                cout << "It isn't an expression!" << endl;
-                break;
-            }
-        }
-        catch (char const* exp)
-        {
-            cout << exp << endl;
+            cout << ex->what() << endl;
         }
 
     }
