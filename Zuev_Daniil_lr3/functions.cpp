@@ -42,13 +42,13 @@ char Stack::pop()
 {
     if(top != 0)
         return stackPtr[--top];
-    else throw error1();
+    else throw logic_error("The stack is emptied during the execution of the function.\n");
 }
 char Stack::tops()
 {
     if(top != 0)
         return stackPtr[top];
-    else throw error2();
+    else throw overflow_error("Missing opening bracket.\n");
 }
 bool isClosingBrackets(char x)
 {
@@ -65,14 +65,14 @@ char* readFormula(stringstream& xstream)
     char a[100];
     a[i++]='(';
     if(!(xstream>>x))
-        throw error3();
+        throw logic_error("The input stream is empty.\n");
     while (x==' ')
         xstream >> x;
     if(x =='('||x=='['||x =='{'||isName(x))
     {
         a[i++] = x;
     }
-    else throw error4(x);
+    else throw error1(x);
     while(xstream>>x)
     {
         while(x == ' ')
@@ -81,7 +81,7 @@ char* readFormula(stringstream& xstream)
         {
             a[i++] = x;
         }
-        else throw error4(x);
+        else throw error1(x);
     }
     a[i++]=')';
     a[i++]='\0';
@@ -103,7 +103,7 @@ void checkFormula(char* a)
             s.push(a[i]);
     }
     if(s.getTop()!=1 )
-        throw error8();
+        throw invalid_argument("Missing closing bracket.\n");
 }
 void checkBrackets(char br, Stack &s)
 {
@@ -129,12 +129,11 @@ void checkBrackets(char br, Stack &s)
     {
         if(!isName(s.tops()))
         {
-            cout<<s.tops()<<endl;
-            throw error5(s.tops());
+            throw error2(s.tops());
         }
         s.pop();
         if(s.tops() == op2||s.tops() == op3)
-            throw error7(s.tops(), br);
+            throw error4(s.tops(), br);
         if(s.tops() == op1)
         {
             s.pop();
@@ -142,13 +141,13 @@ void checkBrackets(char br, Stack &s)
             break;
         }
         if(!(s.tops()=='-'||s.tops()=='+'))
-            throw error6(s.tops());
+            throw error3(s.tops());
         s.pop();
         if(!isName(s.tops()))
-            throw error5(s.tops());
+            throw error2(s.tops());
         s.pop();
         if(s.tops() == op2||s.tops() == op3)
-            throw error7(s.tops(), br);
+            throw error4(s.tops(), br);
         if(s.tops() == op1)
         {
             s.pop();

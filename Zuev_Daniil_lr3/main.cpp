@@ -24,7 +24,7 @@ int main()
               "Введите, 3 если хотите закончить работу."<<endl;
             getline(cin, tmp1);
             if(!atoi(tmp1.c_str() ))
-                throw error9(tmp1.c_str());
+                throw error5(tmp1.c_str());
             else tmp = atoi(tmp1.c_str());
             switch(tmp){
                 case 1:
@@ -37,7 +37,7 @@ int main()
                     ifstream outfile;
                     outfile.open("test.txt");
                     if (!outfile)
-                        throw error10();
+                        throw runtime_error("File is not open.\n");
                     outfile.read(str0, 100);
                     outfile.close();
                     xstream << str0;
@@ -46,7 +46,7 @@ int main()
                 case 3:
                     continue;
                 default:
-                    throw error11();
+                    throw invalid_argument("You entered wrong number.\n");;
             }
             char formula[100];
             strcpy(formula, readFormula(xstream));
@@ -55,18 +55,21 @@ int main()
         catch(error1& e)
         {
             cout<<e.what();
+            e.printErr();
             cout<<"Formula is wrong.\n";
             continue;
         }
         catch(error2& e)
         {
             cout<<e.what();
+            e.printErr();
             cout<<"Formula is wrong.\n";
             continue;
         }
         catch(error3& e)
         {
             cout<<e.what();
+            e.printErr();
             cout<<"Formula is wrong.\n";
             continue;
         }
@@ -81,43 +84,6 @@ int main()
         {
             cout<<e.what();
             e.printErr();
-            cout<<"Formula is wrong.\n";
-            continue;
-        }
-        catch(error6& e)
-        {
-            cout<<e.what();
-            e.printErr();
-            cout<<"Formula is wrong.\n";
-            continue;
-        }
-        catch(error7& e)
-        {
-            cout<<e.what();
-            e.printErr();
-            cout<<"Formula is wrong.\n";
-            continue;
-        }
-        catch(error8& e)
-        {
-            cout<<e.what();
-            cout<<"Formula is wrong.\n";
-            continue;
-        }
-        catch(error9& e)
-        {
-            cout<<e.what();
-            e.printErr();
-            continue;
-        }
-        catch(error10& e)
-        {
-            cout<<e.what();
-            continue;
-        }
-        catch(error11& e)
-        {
-            cout<<e.what();
             continue;
         }
         catch(exception& e)
