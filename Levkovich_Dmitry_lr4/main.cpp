@@ -4,11 +4,9 @@
 #include <fstream>
 #include <cstring>
 #include <exception>
-#include <windows.h>
 
-using namespace std ;
-
-typedef char base;
+ using namespace std ;
+ typedef char base;
     class node {
     public:
         base info;
@@ -19,6 +17,11 @@ typedef char base;
                 lt = nullptr;
                 rt = nullptr;
             }
+	~node(){
+		cout << "<3 " << info << endl;
+		delete lt;
+		delete rt;
+	}
     };
     typedef node *binTree; // "представитель" бинарного дерева
     binTree Create(void);
@@ -28,60 +31,42 @@ typedef char base;
     binTree Right (binTree);// для непустого бин.дерева
     binTree ConsBT(const base &x, const binTree &lst,  const binTree &rst);
     void destroy (binTree&);
-
-    typedef binTree Form;
+     typedef binTree Form;
     Form readForm(std::istream &in);
     void writeForm(std::ostream &out, const Form f);
     Form deriviate(const Form f, char var);
-
-
-    binTree Create()
+     binTree Create()
     {
-        return NULL;
+        return nullptr;
     }
-
-    bool isNull(binTree b)
+     bool isNull(binTree b)
     {
-        return (b == NULL);
+        return (b == nullptr);
     }
-
-    base RootBT (binTree b)                     // для непустого бин.дерева
-    {   if (b == NULL) { cerr << "Error: RootBT(null) \n"; exit(1); }
+     base RootBT (binTree b)                     // для непустого бин.дерева
+    {   if (b == nullptr) { cerr << "Error: RootBT(null) \n"; exit(1); }
         else return b->info;
     }
-
-    binTree Left (binTree b)            // для непустого бин.дерева
-    {   if (b == NULL) { cerr << "Error: Left(null) \n"; exit(1); }
+     binTree Left (binTree b)            // для непустого бин.дерева
+    {   if (b == nullptr) { cerr << "Error: Left(null) \n"; exit(1); }
         else return b ->lt;
     }
-
-    binTree Right (binTree b)           // для непустого бин.дерева
-    {   if (b == NULL) { cerr << "Error: Right(null) \n"; exit(1); }
+     binTree Right (binTree b)           // для непустого бин.дерева
+    {   if (b == nullptr) { cerr << "Error: Right(null) \n"; exit(1); }
         else return b->rt;
     }
-
-    binTree ConsBT(const base &x, const binTree &lst, const binTree &rst)
+     binTree ConsBT(const base &x, const binTree &lst, const binTree &rst)
     {   binTree p;
         p = new node;
-        if ( p != NULL) {
+
             p ->info = x;
             p ->lt = lst;
             p ->rt = rst;
             return p;
-        }
-        else {cerr << "Memory not enough\n"; exit(1);}
+        
     }
 //-------------------------------------
-    void destroy (binTree &b)
-    {   if (b != NULL)  {
-            destroy (b->lt);
-            destroy (b->rt);
-            delete b;
-            b = NULL;
-        }
-    }
-
-    bool isSign(char c){
+     bool isSign(char c){
         return c=='+'||c=='-'||c=='*';
     }
     bool isTerminal(char c){
@@ -89,7 +74,7 @@ typedef char base;
     }
     Form readForm(istream &in){
         if(isTerminal(in.peek())){
-            return ConsBT(in.get(),NULL,NULL);
+            return ConsBT(in.get(), nullptr, nullptr);
         }
         if(in.peek()=='('){
             in.get();
@@ -117,14 +102,13 @@ typedef char base;
         writeForm(out,Right(f));
         out<<')';
     }
-
-    Form deriviate(const Form f, char var){
+     Form deriviate(const Form f, char var){
         if(var==RootBT(f)||isdigit(RootBT(f))||isalpha(RootBT(f))){
             if(!isNull(Right(f))||!isNull(Left(f)))
                 throw "variable or const shouldn't be in root\n";
             if(var==RootBT(f))             // x'=1
-                return ConsBT('1',NULL,NULL);
-            return ConsBT('0',NULL,NULL);  // const'=0
+                return ConsBT('1',nullptr,nullptr);
+            return ConsBT('0',nullptr,nullptr);  // const'=0
         }
         if(RootBT(f)=='+'||RootBT(f)=='-') // (f(x) +/- g(x))' = f'(x) +/- g'(x)
             return ConsBT(
@@ -133,19 +117,7 @@ typedef char base;
                           deriviate(Right(f),var)
                    );
         if(RootBT(f)=='*')                 // (f(x)*g(x))'=f'(x)*g(x)+f(x)*g'(x)
-            return ConsBT(
-                          '+',
-                          ConsBT(
-                              '*',
-                              deriviate(Left(f),var),
-                              Right(f)
-                          ),
-                          ConsBT(
-                              '*',
-                              Left(f),
-                              deriviate(Right(f),var)
-                          )
-                   );
+            return ConsBT('+',ConsBT('*',deriviate(Left(f),var),Right(f)),ConsBT('*',Left(f),deriviate(Right(f),var)));
         throw "unknown char\n";
     }
     int calc(Form f){
@@ -155,8 +127,7 @@ typedef char base;
         if((f->info=='+')||(f->info=='-')||(f->info=='*')){
             x=calc(f->lt);
             y=calc(f->rt);
-
-            if (f->info=='+'){
+             if (f->info=='+'){
                 cout<<"you are here: "<<x<<'+'<<y<<endl;
                 z=x+y;
             }
@@ -185,16 +156,10 @@ typedef char base;
                 cout<<f->info<<endl;
                 print(f->lt, l+1);
     }
+ int main (){
 
-int main (){
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
     Form f;
     Form fPrime;
-    filebuf file;
-    string file_name;
-    stringbuf exp;
-    string temp_str;
     int run = 1;
     string k;
     int m;
@@ -224,8 +189,8 @@ int main (){
     catch(const char* t){
         cout<<t;
     }
-    destroy(f);
-    destroy(fPrime);
+	delete f;
+	delete fPrime;
     cout<<"Continue? Press 1. Else press 0"<<endl;
         cin>>m;
         cin.ignore();
@@ -234,4 +199,3 @@ int main (){
     }
     return 0;
 }
-
