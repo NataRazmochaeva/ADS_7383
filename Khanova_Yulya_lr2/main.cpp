@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
     string temp_str;
-    stringbuf str_buf;
+    string str_buf;
     istream is_str(&str_buf);
     string file_name;
     filebuf file;
