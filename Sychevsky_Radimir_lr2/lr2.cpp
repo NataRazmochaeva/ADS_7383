@@ -44,8 +44,13 @@ int find_arg(string str1){
 int full_elem(pairs* knot, string str1, string str2){ // OR, AND, XOR, NOT
     int FFF = 0;
     int F_LOC = 0;
+    if(!((str1[0] > 64) && (str1[0] < 91))){
+        cout << "некорректные данные" << endl;
+        return -1;
+    }
     knot->left = new atom;
     knot->left->isleft = true;
+    knot->left->un.a = -1;
     knot->left->action = find_arg(str1);
     string tmp;
     switch(knot->left->action){
@@ -68,9 +73,17 @@ int full_elem(pairs* knot, string str1, string str2){ // OR, AND, XOR, NOT
             str1 = tmp;
         }
     } else {
+        if(!((str1[0] > 96) && (str1[0] < 123))){
+            cout << "некорректные данные" << endl;
+            return -1;
+        }
         for(int i = 0; i < str2.length(); i++)
             if(str1[0] == str2[i])
                 knot->left->un.a = str2[i+2] - 48;
+        if(knot->left->un.a == -1){
+            cout << "некорректные данные" << endl;
+            return -1;
+        }
         if(knot->left->action != 4){
             tmp = str1.substr(2);
             str1 = tmp;
@@ -85,12 +98,21 @@ int full_elem(pairs* knot, string str1, string str2){ // OR, AND, XOR, NOT
             knot->right->un.next = new pairs;
             FFF += full_elem(knot->right->un.next, str1, str2);
         } else {
+            if(!((str1[0] > 96) && (str1[0] < 123))){
+                cout << "некорректные данные" << endl;
+                return -1;
+            }
             knot->right = new atom;
+            knot->right->un.a = -1;
             for(int i = 0; i < str2.length(); i++)
                 if(str1[0] == str2[i]){
                     knot->right->un.a = str2[i+2] - 48;
                     knot->right->flag = false;
                 }
+            if(knot->right->un.a == -1){
+                cout << "некорректные данные" << endl;
+                return -1;
+            }
             FFF += 2;
         }
     } else {
@@ -141,7 +163,9 @@ int work_with_console(){
     string str2;
     getline(cin, str2);
     pairs* knot = new pairs;
-    full_elem(knot, str1, str2);
+    int err = full_elem(knot, str1, str2);
+    if(err == -1)
+        return 0;
     cout << find_ans(knot) << endl;
     delete(knot);
     return 0;
@@ -163,7 +187,9 @@ int work_with_file(){
     getline(f, str2);
     cout << str1 << endl << str2 << endl;
     pairs* knot = new pairs;
-    full_elem(knot, str1, str2);
+    int err = full_elem(knot, str1, str2);
+    if(err == -1)
+        return 0;
     cout << find_ans(knot) << endl;
     delete(knot);
     return 0;
