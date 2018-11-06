@@ -64,18 +64,21 @@ int main(){
     getline(f1, tmp);
     while(!f1.eof()){
         Queue arr1;
+        Queue arr2;
         for(int i = 0; i < tmp.length(); i++){
-            if((tmp[i] > 47) && (tmp[i] < 58)){
+            if((tmp[i] > 47) && (tmp[i] < 58))
                 arr1.add_elem(tmp[i]);
-                for(int j = i; j < tmp.length()-1-arr1.count(); j++)
-                    tmp[j] = tmp[j+1];
-                    if(i == tmp.length()-1-arr1.count())
-                        break;
-                    i--;
-            }
+            else if((tmp[i] > 96) && (tmp[i] < 123))
+                arr2.add_elem(tmp[i]);
+        }
+        int i = 0;
+        while(arr2.count()){
+            tmp[i] = arr2.rem_elem();
+            i++;
         }
         while(arr1.count()){
-            tmp[tmp.length()-1-arr1.count()] = arr1.rem_elem();
+            tmp[i] = arr1.rem_elem();
+            i++;
         }
         f2 << tmp << endl;
         getline(f1, tmp);
