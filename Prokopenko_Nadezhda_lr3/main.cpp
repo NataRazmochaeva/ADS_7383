@@ -82,45 +82,59 @@ bool isSign(char* c) {
 char* postfixToInfix() {
 	st_modul1::Stack stack;
 	string c;
+	string file_name;
+	fstream file;
 	int i=0;
 	char* str = new char[2];
-	char* res = new char[30];
-	char* operand1 = new char[30];
-	char* operand2 = new char[30];
-	char* ptr=new char[30];
-	ifstream file("postfix.txt");
+	int sw_var;
+	cout << "Menu" << '\n';
+	cout << "0-exit from the program" << '\n';
+	cout << "1-input a line from a file" << '\n';
+	cin >> sw_var;
+	cin.ignore();
+	while(sw_var){
+		switch (sw_var)
+		{
+	case 1:{ cout << "Enter the name of the file:" << '\n';
+	cin >> file_name;
+	cin.ignore();
+	file.open(file_name, fstream::in);
 	if (!file.is_open()) {
 		cout << "Error opening file.\n";
-		exit(1);
 	}
 	else {
 		getline(file, c);
-	c[c.length()]='\0';
-	while (i!=c.length()) {
-			st_modul1:: base *p = (st_modul1::base*)malloc(30 * sizeof(st_modul1:: base));
-    *p = (st_modul1::base)malloc(30 * sizeof(char));
-  	while(c[i] == ' ')
-			i++;
-		res[0] = '\0';
-		str[0] = c[i];
-		str[1] = '\0';
-		if (isSign(str)) {
-			operand2 = stack.pop2();
-			operand1 = stack.pop2();
-			if(!strcmp(str, "+\0") || !strcmp(str, "-\0")){
-			strcat(res, "(");
-			strcat(res, operand1);
-			strcat(res, str);
-			strcat(res, operand2);
-			strcat(res, ")");
+		int N=c.length();
+		c[N]='\0';
+		char* res = new char[2*N];
+		char* operand1 = new char[2*N];
+		char* operand2 = new char[2*N];
+		char* ptr=new char[2*N];
+		while (i!=N) {
+			st_modul1:: base *p = (st_modul1::base*)malloc(2*N * sizeof(st_modul1:: base));
+    	*p = (st_modul1::base)malloc(2*N * sizeof(char));
+  		while(c[i] == ' ')
+				i++;
+			res[0] = '\0';
+		  str[0] = c[i];
+		  str[1] = '\0';
+		  if (isSign(str)) {
+				operand2 = stack.pop2();
+				operand1 = stack.pop2();
+				if(!strcmp(str, "+\0") || !strcmp(str, "-\0")){
+					strcat(res, "(");
+					strcat(res, operand1);
+					strcat(res, str);
+					strcat(res, operand2);
+					strcat(res, ")");
 		}
 		else {
 			strcat(res, operand1);
 			strcat(res, str);
 			strcat(res, operand2);
 		}
-		strncpy(*p, res, 30);
-		}else 	strncpy(*p, str, 30);
+		strncpy(*p, res, 2*N);
+	}else 	strncpy(*p, str, 2*N);
 		stack.push(*p);
 		i++;
 	}
@@ -130,10 +144,22 @@ char* postfixToInfix() {
 	if(stack.isNull())
 		return operand1;
 	else 	{
-		cout << "Error.\n";
-		exit(1);
-		}
+		cout << "Error. Stak is not empty.\n";
+		break;
 	}
+}
+sw_var=2;
+break;
+	}
+	case 0:
+		break;
+	default: {
+		cout << "Enter again.\n";
+		cin >> sw_var;
+		cin.ignore(); }
+			 break;
+	}
+}
 }
 
 int main()
