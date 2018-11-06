@@ -6,12 +6,14 @@ const char* ExpException::what() const noexcept{
 }
 
 Stack read(Stack s, strstream &x, string str){
-    if(str == "(") s.push(Bracket(s, x, str));
+    if(str == "(" ) s.push(Bracket(s, x, str));
     else
         if(str == "true") s.push(1);
             else
             if(str == "false") s.push(0);
-                else throw ExpException("Wrong logical.");
+                else
+                if(str == "{" || str == "[" || str == "}" || str == "]") throw ExpException("Wrong brackets.");
+                    else throw ExpException("Wrong logical.");
     return s;
 }
 
@@ -37,15 +39,9 @@ bool expression(Stack s, strstream &x, string str){
 
 bool readOne(Stack s, strstream &x, string str){
     str = readStr(s, x, str);
-    if(str == "!") return Not(s, x, str);
+    if(str == "!") return !readOne(s, x, str);
     s = read(s, x, str);
     return s.pop();
-}
-
-bool Not(Stack s, strstream &x, string str){
-    str = readStr(s, x, str);
-    s = read(s, x, str);
-    return !(s.pop());
 }
 
 bool Mark(Stack s, strstream &x, string str){
@@ -58,32 +54,35 @@ bool Mark(Stack s, strstream &x, string str){
         else throw ExpException("Stack is null.");
     }
     cout << str << " ";
-    if(str == "+"){
-        s.push(s.pop() + expression(s, x, str));
-    }
-    if(str == "*"){
-        s.push(s.pop() * readOne(s, x, str));
-        return oneMark(s, x, str);
-    }
+    if(str == "+") s.push(s.pop() + expression(s, x, str));
+    else
+        if(str == "*"){
+            s.push(s.pop() * readOne(s, x, str));
+            return oneMark(s, x, str);
+        }
+        else
+            if(str == "{" || str == "[" || str == "}" || str == "]" ) throw ExpException("Wrong brackets.");
+            else throw ExpException("Wrong mark.");
     return expression(s, x, str);
 }
 
 bool oneMark(Stack s, strstream &x, string str){
     if(!(x >> str)) return s.pop();
     cout << str << " ";
-    if(str == "+"){
-        s.push(s.pop() + readOne(s, x, str));
-    }
-    if(str == "*"){
-        s.push(s.pop() * readOne(s, x, str));
-    }
+    if(str == "+") s.push(s.pop() + readOne(s, x, str));
+    else
+        if(str == "*") s.push(s.pop() * readOne(s, x, str));
+        else
+            if(str == "{" || str == "[" || str == "}" || str == "]") throw ExpException("Wrong brackets.");
+            else throw ExpException("Wrong mark.");
+
     return readOne(s, x, str);
 }
 
 bool Bracket(Stack s, strstream &x, string str){
     bool b = readOne(s, x, str);
     if(!(x >> str)){
-        throw ExpException("Empty mark");
+        throw ExpException("No closing brackets or empty mark.");
     }
     cout << str << " ";
     if(str == ")") return b;
@@ -91,11 +90,10 @@ bool Bracket(Stack s, strstream &x, string str){
 		else
 		if(str == "*") s.push(b * readOne(s, x, str));
 			else throw ExpException("Wrong mark.");
-			
 	if(!(x >> str)) throw ExpException("Missing brackets.");			
     cout << str << " ";
     if(str == ")") return s.pop();
-    else throw ExpException("Missing brackets.");
+    else throw ExpException("Wrong brackets.");
 }
 
 string Space(char str0[]){
@@ -103,7 +101,7 @@ string Space(char str0[]){
     string str1;
     char str[1000];
     while(str0[i] != '\0'){
-        if(str0[i] == '(' || str0[i] == ')' || str0[i] == '+' || str0[i] == '*' || str0[i] == '!'|| str0[i] == '\0'){
+        if(str0[i] == '(' || str0[i] == ')' || str0[i] == '+' || str0[i] == '*' || str0[i] == '!'|| str0[i] == '\0'|| str0[i] == ']'|| str0[i] == '['|| str0[i] == '{'|| str0[i] == '}'){
             str[k] = ' ';
             str[k+1] = str0[i];
             str[k+2] = ' ';
