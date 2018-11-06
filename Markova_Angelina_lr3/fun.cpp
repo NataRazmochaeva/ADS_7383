@@ -117,14 +117,16 @@ string InfixToPostfix(string expression) {
         }
 // Иначе если символ является буквой или цифрой, записываем в преобразованную строку
         else if(IsOperand(expression[i])) {
-	    if(!IsOperand(expression[i+1])) { // проверка двух подряд операндов
-                postfix +=expression[i];
-                postfix+=" ";
-	    }
-	    else { 
-	        cerr<<"Error: incorrect input\n";
-	        exit(1);
-	    }
+		postfix+=expression[i];
+		postfix+=" ";
+		int test=i;
+		test++;
+		while (expression[test]==' ')
+		    test++;
+		if(IsOperand(expression[test])) {
+		    cerr << "Error: incorrect input\n";
+		    exit(1);
+		}
         }	   
         else if (expression[i] == '(') {
             St.push(expression[i]);
@@ -137,6 +139,10 @@ string InfixToPostfix(string expression) {
             }
             St.pop(); //убираем из стека "("
         }
+	if(!IsOperand(expression[i]) && !IsOperator(expression[i])) {
+	    cerr << "Error: incorrect input\n";
+	    exit(1);
+	}
     }
     while(!St.stempty()) { // Оставшиеся операторы достаем из стека
         postfix += St.top();

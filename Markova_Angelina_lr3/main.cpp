@@ -24,7 +24,8 @@ int main() {
             getline(cin,expression);
             postfix = InfixToPostfix(expression);
             cout<<"Output = "<<postfix<<"\n";
-            break;
+            cout<<" Введите следующую команду:\n";
+	    break;
         }
         case(3): {
             cout<<"End!"<<endl;
