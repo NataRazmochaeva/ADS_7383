@@ -79,7 +79,7 @@ bool isSign(char* c) {
 	return !strcmp(c, "+\0") || !strcmp(c, "-\0") || !strcmp(c, "*\0") || !strcmp(c, "^\0");
 }
 
-char* postfixToInfix() {
+int main() {
 	st_modul1::Stack stack;
 	string c;
 	string file_name;
@@ -142,7 +142,7 @@ char* postfixToInfix() {
 	if(!stack.isNull())
 		operand1 = stack.pop2();
 	if(stack.isNull())
-		return operand1;
+		cout<< operand1<< endl;
 	else 	{
 		cout << "Error. Stak is not empty.\n";
 		break;
@@ -156,14 +156,9 @@ break;
 	default: {
 		cout << "Enter again.\n";
 		cin >> sw_var;
-		cin.ignore(); }
+		cin.ignore();
 			 break;
 	}
 }
 }
-
-int main()
-{
-	cout << postfixToInfix() << endl;
-	return 0;
 }
