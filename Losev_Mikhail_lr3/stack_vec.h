@@ -1,6 +1,9 @@
 #ifndef STACK_VEC_H
 #define STACK_VEC_H
 
+#include <iostream>
+
+
 template <class base>
 class Stack
 {
@@ -39,8 +42,11 @@ class Stack
 
         base pop()
         {
-            if (len == 0) 
-                return arr[len];
+            if (len == 0){
+            	std::cerr << "error: pop(0)" << std::endl;
+            	return arr[len];
+            }
+            
             return arr[--len];
         }
 
