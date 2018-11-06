@@ -10,7 +10,9 @@ public:
 
 private:
     template<class Item>
-    void printResult(Queue<Item> &queue);
+    void printLessB(Queue<Item> &queue, int a, int b, ofstream &outFile);
+    template<class Item>
+    void printMoreB(Queue<Item> &queue, int b, ofstream &outFile);
 };
 
 
