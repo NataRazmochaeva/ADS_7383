@@ -40,7 +40,7 @@ class Stack
         base pop()
         {
             if (len == 0) 
-            return arr[len];
+                return arr[len];
             return arr[--len];
         }
 
