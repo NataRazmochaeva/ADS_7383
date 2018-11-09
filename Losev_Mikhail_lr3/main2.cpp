@@ -1,15 +1,16 @@
 // Программа клиент вычисляет арифметическое выражение, заданное в постфиксной форме
 // Ссылочная реализация в динамической (связанной) памяти
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
 #include <cstring>
+#include <cstdint>
 
 #include "stack_vec.h"
 
 using namespace std;
-//using namespace st_modul2;
 
 bool IsDigit( char c )
 {
@@ -21,31 +22,67 @@ bool IsOperator( char c )
 	return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^');
 }
 
-int CalcPrefixExp(string expr)
+long long int CalcPrefixExp(string expr)
 {
-	Stack <int> numbers;
+	Stack <long long int> numbers;
 	int n = expr.length();
 
 	for (int i = n - 1; i >= 0; i--) 
 	{	// бежим от конца выражения к началу
 		if (IsOperator(expr[i]))
-		{   // если попался оператор
-			int x = numbers.pop();
-			int y = numbers.pop(); 
-			if (expr[i] == '+')
+		{   // если попался оператоp
+    
+    
+			long long int x = numbers.pop();
+			long long int y = numbers.pop(); 
+			if (expr[i] == '+'){
+				if ((x > 0 && y > 0 && INT64_MAX - y < x) || 
+       				(x < 0 && y < 0 && INT64_MIN - y > x)) {
+      			  	cerr << "error overflow" << endl;
+   					} // check if overflow
 				numbers.push(x + y);
-			if (expr[i] == '*') 
+			}
+			if (expr[i] == '*') {
+				if ((x > 0 && y > 0 && INT64_MAX / x < y) ||
+      				(x < 0 && y < 0 && INT64_MAX / x < y) ||
+      				(x > 0 && y < 0 && INT64_MIN / x > y) ||
+      				(x < 0 && y > 0 && INT64_MIN / x > y)) {
+					cerr << "error overflow" << endl;
+				} // check if overflow
 				numbers.push(x * y);
-			if (expr[i] == '-')
+			}
+			if (expr[i] == '-'){
+				if ((y > 0 && x < 0 && INT64_MIN + y > x) ||
+      				(y < 0 && x > 0 && INT64_MAX + y < x)) {
+					cerr << "error overflow" << endl;
+				} // check if overflow
 				numbers.push(x - y);
-			if (expr[i] == '/') 
+			}
+			if (expr[i] == '/') {
+				// dont check if overflow cause there cant be overflow when div
 				numbers.push(x / y);
-			if (expr[i] == '^') 
-				numbers.push(pow(x, y));
+				
+			}
+			if (expr[i] == '^'){
+				long long int p = pow(x, y);
+				cout << x << y << endl;
+				if (( x > 0 && y > 0 && log((double)INT64_MAX) / log((double)x) <= (double)y) ||
+					( x < 0 && y > 0 && log(-1 * (double)INT64_MIN) / log(-1 * (double)x) <= (double)y)) {
+					// ln(INT64_MAX) / ln(x) = log_x(INT64_MAX) <= y <=>  INT64_MAX <= x ^ y => OVERFLOOOOOOOW
+					// нестрогое неравенство в целых числах эквивалентно прибавлению единицы к меньшей части
+					// a < b <=> a + 1 <= b
+					// прибавление единицы к логарифму нужно, потому что он может округлиться в том числе вниз, 
+					// если его значение не целое. например, log_2 (2^63 - 1) < 63, но округляется до 63.
+					// ln(INT64_MIN) / ln(x) = log_x(INT64_MIN) > y <=>  INT64_MIN > x ^ y => OVERFLOOOOOOOW
+					
+					cerr << "error overflow" << endl;
+				} // check if overflow
+				numbers.push(p);
+			}
 		}
 		if (IsDigit(expr[i])) //
 		{  // если попалось число
-			int dec_exp = 10;
+			long long int dec_exp = 10;
 			numbers.push(expr[i--] - '0');  // пушим младшую цифру
 			while (IsDigit(expr[i])) 
 			{	// пока идут цифры числа, продолжаем его ввод
@@ -54,11 +91,10 @@ int CalcPrefixExp(string expr)
 			}
 			if (expr[i] == '-') // если число отрицательное
 				numbers.push(-1 * numbers.pop());
-		}
-		
+		}	
 	}
 
-	int answ = numbers.pop(); // сохраение ответа
+	long long int answ = numbers.pop(); // сохраение ответа
 
 	numbers.destroy();
 
@@ -68,6 +104,7 @@ int CalcPrefixExp(string expr)
 void UserInterface ()
 {
     int key;
+    long long int answ;
 	string expr;
 
     while (true) {
@@ -91,7 +128,9 @@ void UserInterface ()
 				fin >> noskipws;	// не пропускать пробелы 
 				if (fin){
 					getline(fin, expr);
-					cout << expr << " = " << CalcPrefixExp(expr) << endl;
+					cout << "computing..." << endl;
+					answ = CalcPrefixExp(expr);
+					cout << expr << " = " << answ << endl;
 				}
 				else cout << "Файл не открыт\n"; 
 			}	
@@ -102,7 +141,9 @@ void UserInterface ()
 				fin >> noskipws;	// не пропускать пробелы 
 				if (fin){
 					getline(fin, expr);
-					cout << expr << " = " << CalcPrefixExp(expr) << endl;
+					cout << "computing..." << endl;
+					answ = CalcPrefixExp(expr);
+					cout << expr << " = " << answ << endl;
 				}
 				else cout << "Файл не открыт\n";
             } 
@@ -113,7 +154,9 @@ void UserInterface ()
             	cout << "Введите выражение: ";
             	cin.ignore(256, '\n');// игнорируем оставшиеся в cin после ввода '3' символы
 				getline(cin, expr);
-				cout << expr << " = " << CalcPrefixExp(expr) << endl;
+				cout << "computing..." << endl;
+				answ = CalcPrefixExp(expr);
+				cout << expr << " = " << answ << endl;
             } 
             break;
         

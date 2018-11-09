@@ -35,7 +35,7 @@ class Stack
         void push(base x)
         {
             if (len == size) 
-                new_size(size<<1);
+         	   new_size(size<<1);
             arr[len++] = x;
             //cout << "Push -> " << x << endl;
         }
@@ -65,6 +65,7 @@ class Stack
             return len == 0;
         }
 
+    protected:
         void new_size(int s)
         {
             if (s <= 0) 
