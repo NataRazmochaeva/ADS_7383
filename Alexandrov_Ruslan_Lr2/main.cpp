@@ -28,13 +28,7 @@ void Main::fileRead() {
         try {
             binKor.readLisp(lisp, str);
         } catch (invalid_argument e) {
-            cout << endl;
-            cout << "This list has an element less then zero" << endl;
-            cout << endl;
-            return;
-        } catch (string s) {
-            cout << endl;
-            cout << s << endl;
+            cout << "Invalid input" << endl;
             cout << endl;
             return;
         }
@@ -62,13 +56,7 @@ void Main::consoleRead() {
     try {
         binKor.readLisp(lisp, str);
     } catch (invalid_argument e) {
-        cout << endl;
-        cout << "This list has an element less then zero" << endl;
-        cout << endl;
-        return;
-    } catch (string s) {
-        cout << endl;
-        cout << s << endl;
+        cout << "Invalid input" << endl;
         cout << endl;
         return;
     }

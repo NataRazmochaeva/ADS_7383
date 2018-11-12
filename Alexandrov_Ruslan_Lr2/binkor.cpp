@@ -61,12 +61,12 @@ void BinKor::readLisp(lisp &y, string &str) {
 
 void BinKor::readSExp(lisp &y, string &str, int &iterator) {
     if (str[iterator] == ')') {
-        throw string("Error: the initial brace is closing");
+        throw invalid_argument("Error: the initial brace is closing");
     } else if (str[iterator] == '-') {
         throw invalid_argument("Element less then zero");
     } else if (str[iterator] != '(') {
         if (!isdigit(str[iterator])) {
-            throw string("This list has not only numbers or brackets");
+            throw invalid_argument("This list has not only numbers or brackets");
         }
         string num;
         int atomWeight;
@@ -80,20 +80,21 @@ void BinKor::readSExp(lisp &y, string &str, int &iterator) {
             atomWeight = str[iterator] - '0';
             iterator++;
             outputString += to_string(atomWeight);
+            weights.push_back(atomWeight);
             y = makeAtom(atomWeight);
         } else if (str[iterator + 1] == ')') {
             atomWeight = atoi(num.c_str());
             outputString += to_string(atomWeight);
+            weights.push_back(atomWeight);
             y = makeAtom(atomWeight);
         } else {
             if (num.empty()) {
-                outputString += to_string(str[iterator] - '0');
+                atomWeight = str[iterator] - '0';
+                outputString += to_string(atomWeight);
             } else {
                 atomWeight = atoi(num.c_str());
                 outputString += to_string(atomWeight);
             }
-            // if the number = length, an atom will be -1
-            y = makeAtom(-1);
         }
     } else {
         if (str[iterator] == '(') outputString += ('(');
@@ -110,7 +111,7 @@ void BinKor::readSeq(lisp &y, string &str, int &iterator) {
         outputString += ' ';
     }
     if (!str[++iterator]) {
-        throw string("Error: there is no closing bracket");
+        throw invalid_argument("Error: there is no closing bracket");
     } else {
         // skip whitespaces
         while (isspace(str[iterator]) && iterator < str.length()) {
@@ -140,9 +141,7 @@ void BinKor::readSeq(lisp &y, string &str, int &iterator) {
 
 int BinKor::getWeight(const lisp x) {
     if (isAtom(x)) {
-//        resultString.push_back((char)x->node.weight);
-//        cout << "X node weight " << x->node.weight << endl;
-        if (x->node.weight != -1)
+        if (x->node.weight  && checkEl(x->node.weight))
             count += x->node.weight;
     } else {
         getWeighHelper(x);
@@ -160,15 +159,18 @@ void BinKor::getWeighHelper(const lisp x) {
 void BinKor::destroy(lisp s) {
     outputString.clear();
     count = 0;
-    if (s != nullptr) {
-        if (!isAtom(s)) {
-            destroy(head(s));
-            destroy(tail(s));
-        }
-        delete s;
-    }
+    weights.clear();
+    delete s;
 }
 
 const string &BinKor::getOutputString() {
     return outputString;
+}
+
+
+bool BinKor::checkEl(base x) {
+    for (int weight : weights) {
+        if (weight == x) return true;
+    }
+    return false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -16,7 +17,6 @@ public:
         bool tag;
         union {
             base weight;
-            char atom;
             two_ptr pair;
         } node;
     };
@@ -46,9 +46,13 @@ public:
 
     void getWeighHelper(const lisp x);
 
+    bool checkEl(base x);
+
     const string &getOutputString();
+
 private:
     string outputString;
     int count = 0;
+    vector<base> weights;
 };
 
