@@ -10,8 +10,7 @@ private:
     int size;
     BST* right;
     BST* left;
-
-public:
+ public:
     BST(int k){key = k; left = right = nullptr; size = 1;}
     int Root(BST* b)
     {
@@ -20,43 +19,27 @@ public:
         else
             return b->key;
     }
-
-
-    BST* Left(BST* b)
+     BST* Left(BST* b)
     {
         if (b == NULL) { exit(1); }
         else return b->left;
     }
-
-    BST* Right(BST* b)
+     BST* Right(BST* b)
     {
         if (b == NULL) { exit(1); }
         else return b->right;
     }
-    BST* find( BST* p, int k){
-        if(!p)
-            return nullptr;
-        if(k==Root(p))
-            return p;
-        if(k<Root(p))
-            return find(Left(p), k);
-        else
-            return find(Right(p), k);
-    }
-
-    int getsize(BST* p) // обертка для поля size, работает с пустыми деревьями (t=NULL)
+     int getsize(BST* p) // Г®ГЎГҐГ°ГІГЄГ  Г¤Г«Гї ГЇГ®Г«Гї size, Г°Г ГЎГ®ГІГ ГҐГІ Г± ГЇГіГ±ГІГ»Г¬ГЁ Г¤ГҐГ°ГҐГўГјГїГ¬ГЁ (t=NULL)
     {
         if(!p)
             return 0;
         return p->size;
     }
-
-    void fixsize(BST* p) // установление корректного размера дерева
+     void fixsize(BST* p) // ГіГ±ГІГ Г­Г®ГўГ«ГҐГ­ГЁГҐ ГЄГ®Г°Г°ГҐГЄГІГ­Г®ГЈГ® Г°Г Г§Г¬ГҐГ°Г  Г¤ГҐГ°ГҐГўГ 
     {
         p->size = getsize(Left(p))+getsize(Right(p))+1;
     }
-
-    BST* rotateright(BST* p) // правый поворот вокруг узла p
+     BST* rotateright(BST* p) // ГЇГ°Г ГўГ»Г© ГЇГ®ГўГ®Г°Г®ГІ ГўГ®ГЄГ°ГіГЈ ГіГ§Г«Г  p
     {
         BST* q = p->left;
         if( !q ) return p;
@@ -66,8 +49,7 @@ public:
         fixsize(p);
         return q;
     }
-
-    BST* rotateleft(BST* q) // левый поворот вокруг узла q
+     BST* rotateleft(BST* q) // Г«ГҐГўГ»Г© ГЇГ®ГўГ®Г°Г®ГІ ГўГ®ГЄГ°ГіГЈ ГіГ§Г«Г  q
     {
         BST* p = q->right;
         if( !p ) return q;
@@ -77,8 +59,7 @@ public:
         fixsize(q);
         return p;
     }
-
-    BST* insertroot(BST* p, int k) // вставка нового узла с ключом k в корень дерева p
+     BST* insertroot(BST* p, int k) // ГўГ±ГІГ ГўГЄГ  Г­Г®ГўГ®ГЈГ® ГіГ§Г«Г  Г± ГЄГ«ГѕГ·Г®Г¬ k Гў ГЄГ®Г°ГҐГ­Гј Г¤ГҐГ°ГҐГўГ  p
     {
         if( !p )
             return new BST(k);
@@ -93,11 +74,10 @@ public:
             return rotateleft(p);
         }
     }
-
-    BST* insertrandom(BST* p, int k) // рандомизированная вставка нового узла с ключом k в дерево p
+     BST* insertrandom(BST* p, int k) // Г°Г Г­Г¤Г®Г¬ГЁГ§ГЁГ°Г®ГўГ Г­Г­Г Гї ГўГ±ГІГ ГўГЄГ  Г­Г®ГўГ®ГЈГ® ГіГ§Г«Г  Г± ГЄГ«ГѕГ·Г®Г¬ k Гў Г¤ГҐГ°ГҐГўГ® p
     {
         if( !p ) return new BST(k);
-            if( rand()%(getsize(p)+1)==getsize(p) ){
+            if( rand()%(getsize(p)+1)==getsize(p)){
               //  cout<<"COMBS: "<<rand()%(getsize(p)+1) <<endl;
                 return insertroot(p,k);
             }
@@ -107,10 +87,8 @@ public:
                 p->right = insertrandom(Right(p),k);
             fixsize(p);
             return p;
-
-    }
-
-    BST* join(BST* p, BST* q) // объединение двух деревьев
+     }
+     BST* join(BST* p, BST* q) // Г®ГЎГєГҐГ¤ГЁГ­ГҐГ­ГЁГҐ Г¤ГўГіГµ Г¤ГҐГ°ГҐГўГјГҐГў
     {
         if( !p ) return q;
         if( !q ) return p;
@@ -127,8 +105,7 @@ public:
             return q;
         }
     }
-
-    BST* remove(BST* p, int k) // удаление из дерева p первого найденного узла с ключом k
+     BST* remove(BST* p, int k) // ГіГ¤Г Г«ГҐГ­ГЁГҐ ГЁГ§ Г¤ГҐГ°ГҐГўГ  p ГЇГҐГ°ГўГ®ГЈГ® Г­Г Г©Г¤ГҐГ­Г­Г®ГЈГ® ГіГ§Г«Г  Г± ГЄГ«ГѕГ·Г®Г¬ k
     {
         if( !p ) return p;
         if( p->key==k )
@@ -143,8 +120,7 @@ public:
             p->right = remove(p->right,k);
         return p;
     }
-
-    BST* Delete(BST* p){
+     BST* Delete(BST* p){
         if (left)
             delete p->left;
         if (right)
@@ -152,9 +128,19 @@ public:
         delete p;
         return p = NULL;
     }
-};
 
-void printtree(BST* treenode, int l){
+	BST* find( BST* tree, int key){
+        if(!tree)
+            return NULL;
+        if(key == tree->key)
+            return tree;
+        if(key < tree->key)
+            return find(tree->left, key);
+        else
+            return find(tree->right, key);
+    }
+};
+ void printtree(BST* treenode, int l){
    if(treenode==NULL){
        for(int i = 0;i<l;++i)
            cout<<"\t";
@@ -167,9 +153,7 @@ void printtree(BST* treenode, int l){
    cout << treenode->Root(treenode)<< endl;
    printtree(treenode->Left(treenode),l+1);
 }
-
-
-int main(){
+ int main(){
     BST* b = NULL;
     int key = 0;
     string str;
@@ -201,15 +185,20 @@ int main(){
                    break;
            }
        }
+	int a = 0;
        char* arr = new char[str.size()+1];
        strcpy(arr, str.c_str());
        char* tok;
        tok = strtok(arr, " ");
        while(tok != NULL){
+	a=atoi(tok);
+	if(b->find(b, a)){
+	tok=strtok(NULL, " ");
+	continue;
+	}
            b = b->insertrandom(b, atoi(tok));
            tok = strtok(NULL, " ");
-
-       }
+        }
        cout<<endl;
        printtree(b,0);
    cout<<"Enter the key"<<endl<<"============================"<<endl;
@@ -221,5 +210,4 @@ int main(){
    delete tok;
    delete[] arr;
    }
-
-}
+ }
