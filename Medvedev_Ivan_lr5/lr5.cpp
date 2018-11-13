@@ -118,9 +118,21 @@ node* remove(node* p, int k){ // удаление из дерева p перво
     printtree(treenode->left,l+1);
 }
 
+node* find( node* tree, int key){
+        if(!tree)
+            return NULL;
+        if(key == tree->key)
+            return tree;
+        if(key < tree->key)
+            return find(tree->left, key);
+        else
+            return find(tree->right, key);
+    }
+
+
  int main(){
      node* treap = NULL;
-     int key = 0;
+     int key = 0, c;
      string str;
      char forSwitch;
      while(1){
@@ -155,9 +167,14 @@ node* remove(node* p, int k){ // удаление из дерева p перво
         char* tok;
         tok = strtok(arr, " ");
         while(tok != NULL){
-            treap = insert(atoi(tok), treap);
+	    c = atoi(tok);
+	    if (find(treap,c)){
+		cout << "key [" << c << "] repeated"<<endl;
+		tok = strtok(NULL, " ");
+		continue;  
+	    }
+            treap = insert(c, treap);
             tok = strtok(NULL, " ");
-
         }
         printPriority(treap);
         cout<<endl;
@@ -171,6 +188,4 @@ node* remove(node* p, int k){ // удаление из дерева p перво
     delete tok;
     delete[] arr;
     }
-
  }
-
