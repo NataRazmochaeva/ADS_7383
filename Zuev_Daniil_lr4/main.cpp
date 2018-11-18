@@ -38,7 +38,6 @@ public:
     BTree* Left();
     BTree* Right();
     BTree* cons(T ,BTree* ,BTree* );
-    void clear();
 };
 template<typename T>
 T BTree<T>::Root()
@@ -71,12 +70,16 @@ BTree<T>* read_binTree(stringstream &xstream)
     BTree<T>* BT;
     BT = new BTree<T>;
     char x;
-    xstream>>x;
+    if(!(xstream>>x))
+        throw logic_error("Input stream is empty.\n");
     if(x == '#')
         return NULL;
     if(x == '(')
     {
-        xstream>>t;
+        if(!(xstream>>t))
+            throw logic_error("Missing node.\n");
+        if(xstream.peek() != '(' && xstream.peek() != ')' && xstream.peek() != '#')
+            throw invalid_argument("An item with invalid type was encountered.\n");
         BTree<T>* left;
         BTree<T>* right;
         if(xstream.peek()==')')
@@ -101,13 +104,15 @@ int print_BTree(BTree<T>* BT, int t)
 {
     if(BT != NULL)
     {
-        for(int j = 0; j<t;j++)
-            cout<<'\t';
-        cout<<BT->Root()<<endl;
         t++;
         print_BTree(BT->Right(),t);
+        for(int j = 0; j<t-1;j++)
+            cout<<'\t';
+        cout<<BT->Root()<<endl;
         print_BTree(BT->Left(),t);
     }
+    else
+        cout<<endl;
     return 0;
 }
 /*------------------------------------ЛЕС----------------------------------------*/
@@ -138,6 +143,7 @@ public:
     T root();
     Forest* create_forest(tree<T>* ,Forest* );
     tree<T>* create_tree(T , Forest<T>* );
+    Forest* sum(Forest<T>*, Forest<T>* );
 
 };
 template<typename T>
@@ -174,6 +180,17 @@ tree<T>* Forest<T>::create_tree(T node, Forest<T>* f)
     return t;
 }
 template<typename T>
+Forest<T>* Forest<T>::sum(Forest<T>* f1, Forest<T>* f2)
+{
+    Forest<T>* f;
+    f = new Forest<T>;
+    if(f1 != NULL)
+        f = create_forest(f1->t, sum(f1->f,f2));
+    else
+        f = f2;
+    return f;
+}
+template<typename T>
 int print_Forest(Forest<T>* F, int t)
 {
     if(F != NULL)
@@ -184,43 +201,26 @@ int print_Forest(Forest<T>* F, int t)
             cout<<'\t';
         cout<<F->root()<<endl;
         t++;
-        if(F->current_forest() != NULL)
             print_Forest(F->current_forest(), t);
     }
     return 0;
 }
-
-/*-----------------------------ОЧЕРЕДЬ-------------------------------------------*/
-
 template<typename T>
-class Queue
+int print_width(Forest<T>* f1)
 {
-private:
-    T el;
-    Queue* first;
-    Queue* last;
-    Queue* next;
-    Queue* prev;
-public:
-    Queue(){ first = NULL; last = NULL;}
-    ~Queue(){delete first; delete last;}
-    void push(T t)
+    Forest<T>* f2;
+    f2 = NULL;
+    while(f1 != NULL)
     {
-        Queue* q = new Queue;
-        q->el = t;
-        q->next = q->first;
-        q->first->prev = q;
-        q->first->q;
+        cout<<"| "<<f1->root()<<" |";
+        f2 = f2->sum(f2,f1->current_forest());
+        f1 = f1->tail_forest();
     }
-    T pop()
-    {
-
-    }
-    T top();
-};
-
-
-
+    if(f2!=NULL)
+        print_width(f2);
+    return 0;
+}
+/*--------------------------ОСТАЛЬНЫЕ-ФУНКЦИИ------------------------------------*/
 template<typename T>
 Forest<T>* BinTree_to_Forest(BTree<T>* BT)
 {
@@ -239,15 +239,28 @@ Forest<T>* BinTree_to_Forest(BTree<T>* BT)
     return F;
 }
 
+template<typename T>
+void print_Trees(BTree<T>* BT, Forest<T>* F)
+{
+    cout<<"BinTree:\n";
+    print_BTree(BT, 0);
+    cout<<"Forest:\n";
+    print_Forest(F, 0);
+    cout<<"The BFS:\n";
+    print_width(F);
+    cout<<endl;
+}
+
 int main()
 {
     stringstream xstream;
-    string type;
-    char* str0= new char[1000];
-    string tmp1;
+
     short int tmp = 0;
     while(tmp != 3)
     {
+        string type;
+        string str0;
+        string tmp1;
         try{
             xstream.str("");
             xstream.clear();
@@ -264,7 +277,7 @@ int main()
                     cout<<"Введите тип данных:"<<endl;
                     getline(cin,type);
                     cout << "Введите формулу: \n";
-                    cin.getline(str0, 1000);
+                    getline(cin, str0);
                     xstream << str0;
                     break;
                 }
@@ -274,10 +287,10 @@ int main()
                     outfile.open("test.txt");
                     if (!outfile)
                         throw runtime_error("File is not open.\n");
-                    outfile.read(str0, 1000);
+                    getline(outfile, type);
+                    getline(outfile, str0);
                     outfile.close();
                     xstream << str0;
-                    getline(xstream, type);
                     break;
                 }
                 case 3:
@@ -292,10 +305,7 @@ int main()
                 BT = read_binTree<char>(xstream);
                 Forest<char>* F;
                 F = BinTree_to_Forest(BT);
-                cout<<"BinTree:\n";
-                print_BTree(BT, 0);
-                cout<<"Forest:\n";
-                print_Forest(F, 0);
+                print_Trees(BT,F);
                 continue;
             }
             if(type == "int")
@@ -305,10 +315,7 @@ int main()
                 BT = read_binTree<int>(xstream);
                 Forest<int>* F;
                 F = BinTree_to_Forest(BT);
-                cout<<"BinTree:\n";
-                print_BTree(BT, 0);
-                cout<<"Forest:\n";
-                print_Forest(F, 0);
+                print_Trees(BT,F);
                 continue;
             }
             if(type == "float")
@@ -318,10 +325,7 @@ int main()
                 BT = read_binTree<float>(xstream);
                 Forest<float>* F;
                 F = BinTree_to_Forest(BT);
-                cout<<"BinTree:\n";
-                print_BTree(BT, 0);
-                cout<<"Forest:\n";
-                print_Forest(F, 0);
+                print_Trees(BT,F);
                 continue;
             }
             if(type == "double")
@@ -331,10 +335,7 @@ int main()
                 BT = read_binTree<double>(xstream);
                 Forest<double>* F;
                 F = BinTree_to_Forest(BT);
-                cout<<"BinTree:\n";
-                print_BTree(BT, 0);
-                cout<<"Forest:\n";
-                print_Forest(F, 0);
+                print_Trees(BT,F);
                 continue;
             }
             throw invalid_argument("Type is not correct.\n");
@@ -342,6 +343,7 @@ int main()
         catch(error5& e)
         {
             cout<<e.what();
+            e.printErr();
             continue;
         }
         catch(exception& e)
