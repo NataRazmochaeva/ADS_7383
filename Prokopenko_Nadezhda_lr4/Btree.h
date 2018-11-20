@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
+#define N 200
 using namespace std;
 struct Node 	//Структура дерева
 {
@@ -7,7 +8,7 @@ struct Node 	//Структура дерева
 	int lt; //индекс левого узла
 	int rt; //индекс правого узла
 };
-typedef Node binTree[100];
+typedef Node binTree[N];
 
 
 bool isNull(binTree, int); //проверка на нулевой узел
@@ -92,7 +93,7 @@ int enterBT(int index, binTree b, istream &input) // считывание дан
 	int p, q;
 	input >> ch;
 	lastIndex = index;
-	if (ch == '#')
+	if (ch == '/')
 	{
 		b[index].info = 0;
 		return index;

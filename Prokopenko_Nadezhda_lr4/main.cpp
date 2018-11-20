@@ -1,4 +1,9 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+/*Скобочное представление бинарного дерева (БД):
+< БД > ::= < пусто > | < непустое БД >,
+< пусто > ::= Λ,
+< непустое БД > ::= ( < корень > < БД > < БД > )*/
+
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -6,6 +11,25 @@
 #include "Btree.h"
 #include "Queue.h"
 using namespace std;
+
+void goriz(int index, binTree b, ofstream &fout)
+{
+	Queue q;
+	q.Put(index);//заношу в очередь индекс корневого элемента дерева
+	while (!q.Empty())// пока очередь не пуста
+	{
+		index = q.Get();//Выдераем из очереди индекс элемента дерева
+		fout << RootBT(index, b) << " ";
+		if (!isNull(b, Left(index, b))) //если слева есть элемент то заносим его индекс в очередь
+		{
+			q.Put(Left(index, b));
+		}
+		if (!isNull(b, Right(index, b)))//если справа есть элемент то заносим его индекс в очередь
+		{
+			q.Put(Right(index, b));
+		}		
+	}
+}
 
 
 int main() {
@@ -47,27 +71,8 @@ int main() {
 	cin >> input;
 		 break;
 	}
-	file.close(); fout.close();
+	file.close();
+	fout.close();
 }
 return 0;
-}
-
-
-void goriz(int index, binTree b, ofstream &fout)
-{
-	Queue q;
-	q.Put(index);//заношу в очередь индекс корневого элемента дерева
-	while (!q.Empty())// пока очередь не пуста
-	{
-		index = q.Get();//Выдераем из очереди индекс элемента дерева
-		fout << RootBT(index, b) << " ";
-if (!isNull(b, Left(index, b))) //если слева есть элемент то заносим его индекс в очередь
-{
-	q.Put(Left(index, b));
-}
-if (!isNull(b, Right(index, b)))//если справа есть элемент то заносим его индекс в очередь
-{
-	q.Put(Right(index, b));
-}
-}
 }
