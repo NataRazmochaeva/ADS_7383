@@ -38,6 +38,8 @@ public:
 
     void getSidesLeastLength(Elem elem, BT *bst, int &count, bool &flag);
 
+    void displayBT(BT *b, int n);
+
     ~BT();
 };
 
@@ -46,6 +48,21 @@ BT<Elem>::BT() {
     root = NULL;
     left = NULL;
     right = NULL;
+}
+
+template<typename Elem>
+void BT<Elem>::displayBT(BT *b, int n) { // n － уровень узла
+    if (b != NULL) {
+        cout << b->element << endl;
+        if (b->right) {
+            for (int i = 1; i <= n; i++) cout << "   ";
+            displayBT(b->right, n + 1);
+        }
+        if (b->left) {
+            for (int i = 1; i <= n; i++) cout << "   ";
+            displayBT(b->left, n + 1);
+        }
+    }
 }
 
 // Init Binary Tree
@@ -59,10 +76,11 @@ void BT<Elem>::createBT(const string &str, int &i) {
         if (str[i] == ')') {
             i++;
         }
-    } else {
-        throw invalid_argument("");
-    }
+    } /*else if (str[i] == '#') {
+        i++;
+    }*/
 }
+
 
 template<typename Elem>
 void BT<Elem>::createRoot(const string &str, int &i) {
@@ -72,7 +90,7 @@ void BT<Elem>::createRoot(const string &str, int &i) {
         element = resStr;
         i++;
     } else {
-        while (!isspace(str[i]) && str[i] != ')' && str[i] != '(' ) {
+        while (str[i] != ')' && str[i] != '(') {
             resStr.push_back(str[i]);
             i++;
         }
@@ -101,7 +119,7 @@ bool BT<Elem>::findElem(Elem elem, BT *bst) {
     if (bst == NULL) {
         return false;
     }
-    if (bst->element == elem) {
+    if (bst->element == elem && bst->element != "#") {
         return true;
     }
     if (!bst->left && !bst->right) {
@@ -115,11 +133,11 @@ bool BT<Elem>::findElem(Elem elem, BT *bst) {
 
 template<typename Elem>
 bool BT<Elem>::findOnSides(Elem elem, BT *bst) {
-    if (bst->element == elem) {
+    if (bst->element == elem && bst->element != "#") {
         return true;
     }
     if (bst->left) {
-        if (bst->left->element == elem) {
+        if (bst->left->element == elem && bst->element != "#") {
             return true;
         }
         findOnSides(elem, bst->left);

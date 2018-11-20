@@ -1,0 +1,7 @@
+(a                     b(f)(ff))
+(a                     b(#)(#))
+
+(ab(bf123(z9)(ab))(zgm(ab)(g15)))
+(ab(g15(z9)(ab))(zgm(ab)(g15)))
+
+(  ab     (bf123 (z9)    (ab))(zgm   (ab)( g15)))

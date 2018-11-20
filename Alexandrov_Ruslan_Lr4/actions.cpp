@@ -4,7 +4,10 @@
 #include <sstream>
 #include <vector>
 #include "actions.h"
-
+// empty list #
+// print tree as structure
+// enter skip
+// and (aa    b)  one el
 using namespace std;
 
 void Actions::start(string btree) {
@@ -25,7 +28,10 @@ void Actions::start(string btree) {
         switch (choice) {
             case 1:
                 cout << "Your element..." << endl;
-                cin >> element;
+                cin.ignore();
+                getline(cin, element);
+                if (element.empty()) return;
+
                 if (binaryTree.findElem(element, &binaryTree)) {
                     cout << "-----" << endl;
                     cout << "Your element [" << element << "] was found" << endl;
@@ -34,6 +40,7 @@ void Actions::start(string btree) {
                                                                                                              &binaryTree)
                          << endl;
                     cout << "-----" << endl;
+                    binaryTree.displayBT(&binaryTree, 1);
                 } else {
                     cout << "Your element [" << element << "] wasn`t found" << endl;
                 }
@@ -44,19 +51,26 @@ void Actions::start(string btree) {
     }
 }
 
+
 bool Actions::validate(string &str) {
     vector<char> brackets;
     string res;
     unsigned int countBrackets = 0;
-    for (char i : str) {
-        if (isspace(i)) {
+    for (int i = 0; i < str.size(); i++) {
+        if (isspace(str[i])) {
             continue;
-        } else if (i == '(') {
-            res.push_back(i);
+        } else if (str[i] == '(') {
+            brackets.push_back(str[i]);
+            res.push_back(str[i]);
             countBrackets++;
-            brackets.push_back(i);
-        } else if (i == ')') {
-            res.push_back(i);
+            i++;
+            while (str[i + 1] != ')' && str[i + 1] != '(') {
+                res.push_back(str[i]);
+                i++;
+            }
+            res.push_back(str[i]);
+        } else if (str[i] == ')') {
+            res.push_back(str[i]);
             countBrackets++;
             try {
                 brackets.pop_back();
@@ -64,7 +78,7 @@ bool Actions::validate(string &str) {
                 return false;
             }
         } else {
-            res.push_back(i);
+            res.push_back(str[i]);
         }
     }
     str = res;
