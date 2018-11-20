@@ -52,8 +52,6 @@ void Actions::start(string btree) {
 }
 
 bool Actions::validate(string &str) {
-    if (str[0] != '(' || str[str.size() - 1] != ')' || !isspace(str[0]) || !isspace(str[str.size() - 1]))
-        return false;
     vector<char> brackets;
     string res;
     unsigned int countBrackets = 0;
@@ -83,6 +81,8 @@ bool Actions::validate(string &str) {
         }
     }
     str = res;
+    if (str[0] != '(' || str[str.size() - 1] != ')')
+        return false;
     return brackets.empty() && (countBrackets > 0);
 }
 
