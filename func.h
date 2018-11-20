@@ -8,7 +8,7 @@ using namespace binTree_modul;
 	bool isSignal( const char c );
 	void DelSpace(istream &in);
 	string MakeForm(binTree b);
-	binTree MakeTree(istream &in);
+	binTree MakeTree(istream &in, int k);
 	void Remake(binTree b);
 	void Invariant(binTree b);
 	string ToPrefix(binTree b);

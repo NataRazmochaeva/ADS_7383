@@ -7,13 +7,16 @@
 #include "func.h"
 using namespace std ;
 using namespace binTree_modul;
-int main () 
-{
+int main () {
 	string exp;
 	binTree tr;
-	
+	int k = 0;
 	cout << "Enter expression: ";
-	tr = MakeTree(cin);
+	tr = MakeTree(cin, 0);
+	if (tr == NULL){
+		//cout<<"Expression not wrote"<<endl;
+		return 0;
+	}
 	cout << "Tree built:" << endl;
 	exp = MakeForm(tr);
 	cout << exp << endl;

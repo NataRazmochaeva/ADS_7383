@@ -50,17 +50,36 @@ using namespace binTree_modul;
 		str += " )";
 	}
 
-	binTree MakeTree(istream &in){
-
+	binTree MakeTree(istream &in, int k){
+		
 		base c, sign;
 		binTree left, right;
 		DelSpace(in);
 		c = in.get();
-		if (isSymbol(c)) // если формула является символом
-			return MakeLeaf(c); 
+		if (c=='\n'){
+			cout<<"Expression not wrote"<<endl;
+			return NULL;
+		}
+		if (isSymbol(c) && k==0){ // если формула является символом
+			base h;
+			k++;
+			DelSpace(in);
+			h = in.get();
+			if (h=='\n')						
+				return MakeLeaf(c);
+			else{ 
+				cout<<"Exp error"<<endl;
+				return NULL;
+			}
+		}
+		if (isSymbol(c)){
+			k=1;
+			return MakeLeaf(c);
+		} 
 		if (c == '('){ // если формула имеет вид (<симв><знак><симв>)
 			DelSpace(in);
-			left = MakeTree(in); // первая формула 
+			k++;
+			left = MakeTree(in, k++); // первая формула 
 			DelSpace(in);
 			c = in.get();
 			if (isSignal(c))
@@ -68,7 +87,7 @@ using namespace binTree_modul;
 			else { cerr << "error: sign expected" << endl; return NULL; }
 			// если после первой формулы нет знака
 			DelSpace(in);
-			right = MakeTree(in); // вторая формула 
+			right = MakeTree(in, k++); // вторая формула 
 			DelSpace(in); // проверка скобок
 			c = in.get(); 
 			if (c != ')') { cerr << "error: ')' expected" << endl; return NULL; }
@@ -79,7 +98,7 @@ using namespace binTree_modul;
 		else {
 			if (isSignal(c)) cerr << "error: extra sign in formula" << endl;
 			else cerr << "error: external symbol if formula" << endl;
-			return MakeTree(in);
+			return MakeTree(in, k++);
 		 } 
 	}
 
