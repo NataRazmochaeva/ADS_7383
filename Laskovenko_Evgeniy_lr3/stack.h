@@ -60,7 +60,6 @@ Stack<BASE>::push(BASE el)
 {
     if(end_index == arr_size-1)
         resize(arr_size*2);
-
     arr[end_index] = el;
     end_index++;
 }
@@ -87,5 +86,6 @@ Stack<BASE>::~Stack<BASE>()
     clear();
     delete[] arr;
 }
+
 
 #endif // STACK_H

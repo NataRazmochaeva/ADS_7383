@@ -15,7 +15,6 @@ main()
     filebuf file;
     stringbuf str_buf;
     istream is_str(&str_buf);
-
     while(true)
     {
         try
@@ -29,10 +28,8 @@ main()
                file.close();
                throw new client_err("Incorrect filename.");
             }
-
             auto size = file.in_avail();
             char temp_ch;
-
             cout << "File contains: ";
             for(auto c_size = 0; c_size<size; c_size++)
             {
@@ -56,7 +53,6 @@ main()
         {
             cout << ex->what() << endl;
         }
-
     }
     return 0;
 }

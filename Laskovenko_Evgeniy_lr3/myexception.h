@@ -1,5 +1,6 @@
 #include <exception>
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -9,9 +10,10 @@ using namespace std;
 class analyzer_err : public exception
 {
 public:
-    analyzer_err(const char* exp) noexcept
+    analyzer_err(int index, const char* exp="") noexcept
     {
-        msg = exp;
+    sprintf(msg, "Index: %d, Error msg: ", index+1);
+        msg = strcat(msg, exp);
     }
     virtual const char* what() const noexcept
     {
@@ -19,9 +21,8 @@ public:
     }
     virtual ~analyzer_err(){}
 private:
-    const char* msg;
+    char* msg;
 };
-
 class client_err : public exception
 {
 public:
