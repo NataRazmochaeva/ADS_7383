@@ -4,10 +4,10 @@
 #include <sstream>
 #include <vector>
 #include "actions.h"
-// empty list #
-// print tree as structure
-// enter skip
-// and (aa    b)  one el
+// empty list #, +
+// print tree as structure -
+// enter skip +
+// and (aa    b) - one el +
 using namespace std;
 
 void Actions::start(string btree) {
@@ -51,8 +51,9 @@ void Actions::start(string btree) {
     }
 }
 
-
 bool Actions::validate(string &str) {
+    if (str[0] != '(' || str[str.size() - 1] != ')' || !isspace(str[0]) || !isspace(str[str.size() - 1]))
+        return false;
     vector<char> brackets;
     string res;
     unsigned int countBrackets = 0;
