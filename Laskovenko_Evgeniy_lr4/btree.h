@@ -18,12 +18,8 @@ public:
         rt = nullptr;
     }
     //-------------------------------------
-    bool
-    isNull(BinTree*)
-    { return this == nullptr; }
-    //-------------------------------------
     base
-    RootBT(BinTree*)
+    RootBT()
     {
         if(!this)
             throw "Error: RootBT(null)";
@@ -32,7 +28,7 @@ public:
     }
     //-------------------------------------
     BinTree*
-    Left (BinTree*)
+    Left ()
     {
         if (!this)
             throw "Error: Left(null)";
@@ -41,7 +37,7 @@ public:
     }
     //-------------------------------------
     BinTree*
-    Right (BinTree*)
+    Right ()
     {
         if (!this)
             throw "Error: Right(null)";
@@ -49,19 +45,17 @@ public:
             return this->rt;
     }
     //-------------------------------------
-    BinTree*
-    ConsBT(const base x, BinTree* lst, BinTree* rst)
+    void
+    ConsBT(const base x, BinTree* lst=new BinTree, BinTree* rst=new BinTree)
     {
-        auto p = new BinTree;
-        if (p)
+        if (this)
         {
-            p->info = x;
-            p->lt = lst;
-            p->rt = rst;
-            return p;
+            this->info = x;
+            this->lt = lst;
+            this->rt = rst;
         }
         else
-            throw "Memory not enough";
+            throw "Error: ConsBT(null)";
     }
     //-------------------------------------
     ~BinTree()
