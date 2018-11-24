@@ -70,15 +70,32 @@ BTree<T>* read_binTree(stringstream &xstream)
     BTree<T>* BT;
     BT = new BTree<T>;
     char x;
+    char* a;
+    a = new char[10];
     if(!(xstream>>x))
-        throw logic_error("Input stream is empty.\n");
+        throw logic_error("The end of the line at the place where the subtree should be met.\n");
     if(x == '#')
         return NULL;
     if(x == '(')
     {
-        if(!(xstream>>t))
-            throw logic_error("Missing node.\n");
-        if(xstream.peek() != '(' && xstream.peek() != ')' && xstream.peek() != '#')
+        a[0] = xstream.get();
+        if(!atof(a))
+        {
+            xstream.putback(a[0]);
+            if(!(xstream>>t)||t==')'||t=='(')
+            {
+                if(a[0] == '(' || a[0]==')')
+                    throw invalid_argument("Missing node.\n");
+                else throw invalid_argument("An item with invalid type was encountered.\n");
+            }
+        }
+        else
+        {
+            xstream.putback(a[0]);
+            if(!(xstream>>t))
+                    throw logic_error("Missing node.\n");
+        }
+        if(xstream.peek() != '(' && xstream.peek() != ')' && xstream.peek() != '#' && xstream.peek() != EOF)
             throw invalid_argument("An item with invalid type was encountered.\n");
         BTree<T>* left;
         BTree<T>* right;
@@ -89,11 +106,12 @@ BTree<T>* read_binTree(stringstream &xstream)
         }
         else
         {
+            if (xstream.peek() == EOF) throw invalid_argument("Missing closing backet!\n");
             left = read_binTree<T>(xstream);
             right = read_binTree<T>(xstream);
         }
         xstream>>x;
-        if (!(x = ')')) throw invalid_argument("Missing closing backet!\n");
+        if (!(x == ')')) throw invalid_argument("Missing closing backet!\n");
         BT = BT->cons(t, left, right);
     }
     else throw invalid_argument("Missing opening bracket!\n");
