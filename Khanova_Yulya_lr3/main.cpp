@@ -6,10 +6,18 @@
 #include "stack.h"
 using namespace std;
 
+void write(Stack &s, std::ofstream &out);
 void read(Stack &s,std::ifstream &in, std::ofstream &out){
-    char c;
-    while ((c = in.get()) != '\n' && c!=EOF)
-        s.push(c);
+    int MAX_LENGTH = 100;
+    char str[MAX_LENGTH];
+    while (!in.eof()){
+      in.getline(str, MAX_LENGTH-1, '\n');
+      for(int i = 0; i<strlen(str); i++){
+        s.push(str[i]);
+      }
+        write(s, out);
+      }
+
 }
 
 void write(Stack &s, std::ofstream &out){
@@ -47,7 +55,6 @@ int main(){
         else {
           while (!fin.eof()){
             read(s,fin,fout);
-            write(s, fout);
           }
         }
         break;
