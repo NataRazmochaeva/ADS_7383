@@ -1,3 +1,5 @@
+#include "myexception.h"
+
 #ifndef BTREE_H
 #define BTREE_H
 
@@ -22,25 +24,25 @@ public:
     RootBT()
     {
         if(!this)
-            throw "Error: RootBT(null)";
+            throw new my_ex("Error: RootBT(null)");
         else
             return this->info;
     }
     //-------------------------------------
     BinTree*
-    Left ()
+    Left()
     {
         if (!this)
-            throw "Error: Left(null)";
+            throw new my_ex("Error: Left(null)");
         else
             return this->lt;
     }
     //-------------------------------------
     BinTree*
-    Right ()
+    Right()
     {
         if (!this)
-            throw "Error: Right(null)";
+            throw new my_ex("Error: Right(null)");
         else
             return this->rt;
     }
@@ -55,16 +57,17 @@ public:
             this->rt = rst;
         }
         else
-            throw "Error: ConsBT(null)";
+            throw new my_ex("Error: ConsBT(null)");
     }
     //-------------------------------------
     ~BinTree()
     {
         if(this)
         {
-            delete this->lt;
-            delete this->rt;
-            delete this;
+            if(this->lt)
+                delete this->lt;
+            if(this->rt)
+                delete this->rt;
         }
     }
     //-------------------------------------

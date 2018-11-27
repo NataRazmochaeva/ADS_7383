@@ -34,10 +34,10 @@ buildBT_RLR(istream& is_str, BinTree* root=new BinTree, bool flag=false)
             flag = false;
         }
         else
-            throw "Error: Invalid character.";
+            throw new my_ex("Error: Invalid character.");
     }
     else if(flag)
-        throw "Error: Argument expected.";
+        throw new my_ex("Error: Argument expected.");
 }
 
 void
@@ -65,25 +65,26 @@ printBT(BinTree* root, unsigned int i=0)
 }
 
 void
-prefix_to_infix(BinTree* root, bool rt_flag=false)
+prefix_to_infix(BinTree* root, BinTree* prev=nullptr)
 {
     if(root->Left())
-        prefix_to_infix(root->Left());
-    else if(!rt_flag)
     {
-        cout << '(' << root->RootBT();
-        return;
+        if(root->Right() && isTerm(root->Right()->RootBT()))
+            cout << '(';
+        prefix_to_infix(root->Left(), root);
     }
     else
     {
-        cout << root->RootBT() << ')';
+        cout << root->RootBT();
+        if(prev && root==prev->Right())
+            cout << ')';
         return;
     }
 
     cout << root->RootBT();
 
     if(root->Right())
-        prefix_to_infix(root->Right(), true);
+        prefix_to_infix(root->Right(), root);
 }
 
 void
@@ -96,9 +97,9 @@ fixBT(BinTree* root, BinTree* pv_rt=nullptr)
         switch(pv_rt->RootBT())
         {
         case '*':
-            if(root->RootBT()=='0')
+            if(pv_rt->Left()->RootBT()=='0' || pv_rt->Right()->RootBT()=='0')
                 pv_rt->ConsBT('0', nullptr, nullptr);
-            else if(root->RootBT()=='1')
+            else if(pv_rt->Left()->RootBT()=='1' || pv_rt->Right()->RootBT()=='1')
             {
                 if(pv_rt->Left()==root)
                     pv_rt->ConsBT(pv_rt->Right()->RootBT(), nullptr, nullptr);
@@ -107,13 +108,10 @@ fixBT(BinTree* root, BinTree* pv_rt=nullptr)
             }
             break;
         case '+':
-            if(root->RootBT()=='0')
-            {
-                if(pv_rt->Left()==root)
-                    pv_rt->ConsBT(pv_rt->Right()->RootBT(), nullptr, nullptr);
-                else if(pv_rt->Right()==root)
-                    pv_rt->ConsBT(pv_rt->Left()->RootBT(), nullptr, nullptr);
-            }
+            if(pv_rt->Left()->RootBT()=='0')
+                pv_rt->ConsBT(pv_rt->Right()->RootBT(), nullptr, nullptr);
+            else if(pv_rt->Right()->RootBT()=='0')
+                pv_rt->ConsBT(pv_rt->Left()->RootBT(), nullptr, nullptr);
             break;
         case '-':
             if(root->RootBT()=='0' && pv_rt->Right()==root)

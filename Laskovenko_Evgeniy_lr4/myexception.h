@@ -1,8 +1,10 @@
 #include <exception>
 
+using namespace std;
+
 #ifndef MYEXCEPTION_H
 #define MYEXCEPTION_H
-/*
+
 class my_ex : public exception
 {
 public:
@@ -18,5 +20,5 @@ public:
 private:
     const char* msg;
 };
-*/
+
 #endif // MYEXCEPTION_H
