@@ -52,9 +52,10 @@ void Main::consoleRead() {
     if (message.empty())
         return;
     CodeTree *ct = fanno_shannon(message);
-    char *resUlt = encode(ct, message);
+    char *resultCode = encode(ct, message);
     cout << "Your code " << endl;
-    cout << resUlt << endl;
+    cout << resultCode << endl;
+    displayTree(ct,1);
 }
 
 int main() {

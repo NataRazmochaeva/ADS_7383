@@ -43,6 +43,45 @@ CodeTree *fanno_shannon(const string &message) {
     return fanno_shannon(symbols, len);
 }
 
+void displayTree(const CodeTree *b, int n) {
+    if (b != NULL) {
+        const CodeTree *newT = b;
+        if (b->s.c != 0) {
+            cout << "'" << b->s.c << "' / {";
+            cout << b->s.weight << "}";
+        } else {
+            cout << "'";
+            helpToDisplay(newT);
+            cout << "' / {";
+            cout << b->s.weight << "}";
+        }
+        cout << endl;
+        if (b->right) {
+            for (int i = 1; i <= n; i++) cout << "   ";
+            cout << " [1] ";
+            displayTree(b->right, n + 1);
+        }
+        if (b->left) {
+            for (int i = 1; i <= n; i++) cout << "   ";
+            cout << " [0] ";
+            displayTree(b->left, n + 1);
+        }
+        delete newT;
+    }
+}
+
+void helpToDisplay(const CodeTree *b) {
+    if (b->s.c != 0) {
+        cout << b->s.c;
+    }
+    if (b->right) {
+        helpToDisplay(b->right);
+    }
+    if (b->left) {
+        helpToDisplay(b->left);
+    }
+}
+
 int middle(const Symbol *symbols, int l, int sum, int &lsum, int &rsum) {
     int m = l;
     lsum = symbols[m].weight;
