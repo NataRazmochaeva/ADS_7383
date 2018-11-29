@@ -28,10 +28,20 @@ int full_b_tree(b_tree* tree, string str){
     int flag = 0;
     int count = 0;
     int current_count = 0;
+    if(str[0] != '(')
+        return -1;
     string tmp;
-    tree->a = str[1];
-    tmp = str.substr(2);
-    str = tmp;
+    if(str[1] != ')'){
+        tree->a = str[1];
+        tmp = str.substr(2);
+        str = tmp;
+        current_count = 2;
+    } else {
+        tree->a = '0';
+        tmp = str.substr(1);
+        str = tmp;
+        current_count = 1;
+    }
     if(str[0] == '('){
         tree->left = new b_tree;
         count += full_b_tree(tree->left, str);
@@ -48,15 +58,17 @@ int full_b_tree(b_tree* tree, string str){
     } else if(str[0] == ')'){
         tree->left = NULL;
         tree->right = NULL;
-    }
+    } else 
+        return -1;
     if(str[0] == '('){
         flag = 1;
         tree->right = new b_tree;
         count += full_b_tree(tree->right, str);
-    }
-    if(str[0] == ')')
+    } else if(str[0] == ')')
         tree->right = NULL;
-    return count+3;
+        else 
+            return -1;
+    return count+current_count+1;
 }
 
 void pr_b_tree(b_tree* tree, int level, int is_right){
@@ -75,9 +87,9 @@ void pr_b_tree(b_tree* tree, int level, int is_right){
         pr_b_tree(tree->right, level+1, 1);
     return;
 }
-
 void process(b_tree* tree, forest* f_tree){
     f_tree->branch[f_tree->count] = new forest;
+    f_tree->branch[f_tree->count]->count = 0;
     f_tree->branch[f_tree->count]->a = tree->a;
     f_tree->count++;
     if(tree->left != NULL)
@@ -154,10 +166,15 @@ int work_with_console(){
         str.erase(i, 1);
     b_tree* tree = new b_tree;
     int count = full_b_tree(tree, str);
+    if(count == -1){
+        cout << "Неверная строка!" << endl;
+        return 0;
+    }
     cout << "Бинарное дерево:" << endl;
     pr_b_tree(tree, 0, 0);
     forest* f_tree = new forest;
     f_tree->a = '*';
+    f_tree->count = 0;
     process(tree, f_tree);
     cout << "Лес:" << endl;
     pr_forest(f_tree, 0, 0);
@@ -206,17 +223,17 @@ int work_with_file(){
 
 int main(){
     pr_menu();
-    int way = 0;
+    char way;
     cin >> way;
-    while(way){
+    while(way != '0'){
         switch (way){
-            case 1:
+            case '1':
                 work_with_console();
                 cout << endl;
                 pr_menu();
                 cin >> way;
                 break;
-            case 2:
+            case '2':
 				work_with_file();
                 cout << endl;
                 pr_menu();
