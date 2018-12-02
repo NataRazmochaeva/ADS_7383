@@ -7,11 +7,22 @@
  #define N 500
 
  int main(){
- char *name;
+ char *name, *fil;
  FILE *file;
  int quit = 1;
-while(quit != 0){
- printf("Please input your expression\n");
+ int menu;
+ printf("If you want work with file press '1' else press '2'\n");
+ scanf("%d", &menu);
+
+if(menu != 1 && menu != 2){
+	printf("incorrect input\n");
+	return 0;
+}
+
+ while(quit != 0){
+	
+	if (menu == 2){
+	printf("Please input your expression\n");
  	scanf("\n");
  	name = (char*)malloc(sizeof(char)*N);
  	fgets(name, N, stdin);
@@ -19,6 +30,32 @@ while(quit != 0){
  	fputs(name, file);
  	fclose(file);
  	file = fopen("input.txt","r");
+ 	}
+
+ 	if(menu == 1){
+ 	fputs("Please, type the name of the file in format <name>.txt\n",stdout);
+	scanf("\n");
+	fil = (char*)malloc(sizeof(char)*N);
+	fgets(fil,N,stdin);
+	fil[strlen(fil)-1]='\0';
+	file = fopen(fil,"r+");
+	
+	name = (char*)malloc(sizeof(char)*N);
+	fgets(name, N, file);
+	name[strlen(name)] = '\n';
+	name[strlen(name)+1] = '\0';
+	fclose(file);
+	remove(fil);
+
+	file = fopen(fil,"w");
+	fputs(name, file);
+	fclose(file);
+ 	file = fopen(fil,"r");
+	if (file == NULL){
+		printf("File not existed!\n");
+		return 0;
+	}
+ 	}
  
  fpos_t txt_pointer;
  fgetpos(file, &txt_pointer);
@@ -74,17 +111,12 @@ while(quit != 0){
  }
  free(name);
  fclose(file);
+ free(fil);
  remove("log.txt");
  //remove("input.txt");
  clearList(Head);
  printf("If you want to finish press 0, else press 1\n");
  scanf("%d", &quit);
  }
-
-
-
-
-
-
   return 0;
  }
