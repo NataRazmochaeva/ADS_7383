@@ -7,13 +7,11 @@
 если нет, то указать номер ошибочной позиции.*/
 
 #include "stack.hpp"
-using namespace STACK;
 
 int main() {
 
   string str;
   char k = 'a';
-  int i = 0, ans;
   Stack S;
 
   while (k != 'q'){
@@ -29,8 +27,9 @@ int main() {
         ifstream ifile("test.txt");
         getline(ifile, str);
         str.push_back('\0');
-        ans = Text(str, i);
-        if (ans == is_text && S.stempty()) cout<<"Это текст!" <<endl;
+        len = str.size();
+        ans = Check(str,S);
+        if (ans == -1 && S.stempty()) cout<<"Это текст!" <<endl;
         else {
           cout<<"Это не текст!" <<endl;
           cout<<"Место ошибки: "<<ans<<endl;
@@ -41,8 +40,11 @@ int main() {
         getchar();
         getline(cin, str);
         str.push_back('\0');
-        ans = Text(str, i);
-        if (ans == is_text && S.stempty()) cout<<"Это текст!" <<endl;
+        len = str.size();
+        cout<<"len: "<<len<<endl;
+        ans = Check(str,S);
+        cout<<"ans: "<<ans<<endl;
+        if (ans == -1 && S.stempty()) cout<<"Это текст!" <<endl;
         else {
           cout<<"Это не текст!" <<endl;
           cout<<"Место ошибки: "<<ans<<", "<<str[i]<<endl;

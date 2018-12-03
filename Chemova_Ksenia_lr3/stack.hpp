@@ -3,32 +3,22 @@
 #include <fstream>
 using namespace std;
 
-namespace STACK {
-typedef char T;
-
 class Stack { // определение класса
 private:
-    struct stack;
-    stack *head;
+    char br;
+    Stack *prev;
+    Stack *head;
 public:
     Stack() {
-        head=NULL;
+		br = '\0';
+		head = NULL;
+		prev = NULL;
     };
     void pop();
-    void push(T a);
-    T top();
+    void push(char a);
+    char top();
     bool stempty();
-    void clear();
     ~Stack();
 };
-}
 
-enum key {
-  empty = -1,
-  closing_bracket = -2,
-  is_text = -3,
-  is_elem = -4,
-};
-
-int Text(string str, int i);
-int Elem(string str, int i);
+int Check(string str, Stack s);
