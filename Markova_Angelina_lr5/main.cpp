@@ -1,19 +1,22 @@
 #include <iostream>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <cctype>
 using namespace std;
 
+long long int maxc = pow(2,32);
 
 struct node {    // структура для представления узлов дерева
     int key;     // ключ-значение
-    int prior;   // приоритет
+    long long prior;   // приоритет
     node* left;  // указатель на левое поддерево
     node* right; // указатель на правое поддерево
     node(int k) {
         key = k; // инициализация структуры
         left = right = NULL;
-        prior = rand()%100; // рандомные числа от 0 до 99
+        prior = rand()%maxc; // рандомные числа от 0 до 99
     }
 };
 
@@ -57,13 +60,12 @@ node* insert(int key, node* root) { // вставка
     return root;
 }
 
-node* Delete(node* p) {
-    if (left)
-        delete p->left;
-    if (right)
-        delete p->right;
+void Delete(node* p) {
+    if(p==NULL)
+        return;
+    Delete(p->left);
+    Delete(p->right);
     delete p;
-    return p = NULL;
 }
 
 void printPriority(node* root) {
@@ -113,7 +115,7 @@ void printtree(node* treenode, int l) {
 
 int main() {
     node* treap = NULL; // пирамида поиска
-    int el = 0, c;
+    int c, el=0;
     string str;
     char forSwitch;
     cout << "\033[34m\tЗдравствуйте!Выберите что вы хотите:\033[0m\n 1) Нажмите 1, чтобы считать с консоли.\n 2) Нажмите 2, чтобы считать с файла.\n 3) Нажмите 3, чтобы выйти из программы.\n" << endl;
@@ -151,7 +153,7 @@ int main() {
         tok = strtok(arr, " "); // разделяем строку на цифры - ключи
         while(tok != NULL) {
             c = atoi(tok);      // конвертируем строку в величину типа int
-	    if(c==0) { 
+	    if(isalpha(*tok)) { 
 	        cout<<"Некорректные данные!"<<endl;
                 return 0;
 	    }
@@ -167,13 +169,16 @@ int main() {
         cout<<endl;
         printtree(treap,0);
         cout<<"---------------------------"<<endl<<"Введите ключ, который хотите добавить"<<endl;
-        cin >> el;
-        treap = add(treap, el);
-        printtree(treap,0);
-        treap = Delete(treap);
-        str.clear();
-        delete tok;
-        delete[] arr;
-        cout<<"Введите следующую команду:\n";
-    }
+        if(isdigit(cin.peek())) {
+		    cin >> el;
+			cout<<el<<endl;
+            treap = add(treap, el);
+            printtree(treap,0);
+            Delete(treap);
+            str.clear();
+            delete tok;
+            delete[] arr;
+            cout<<"Введите следующую команду:\n";
+		}
+}
 }
