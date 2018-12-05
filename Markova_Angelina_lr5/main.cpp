@@ -3,20 +3,21 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <cctype>
+#include <iomanip>
+
 using namespace std;
 
 long long int maxc = pow(2,32);
 
-struct node {    // структура для представления узлов дерева
-    int key;     // ключ-значение
+struct node {          // структура для представления узлов дерева
+    int key;           // ключ-значение
     long long prior;   // приоритет
-    node* left;  // указатель на левое поддерево
-    node* right; // указатель на правое поддерево
+    node* left;        // указатель на левое поддерево
+    node* right;       // указатель на правое поддерево
     node(int k) {
-        key = k; // инициализация структуры
+        key = k;       // инициализация структуры
         left = right = NULL;
-        prior = rand()%maxc; // рандомные числа от 0 до 99
+        prior = rand()%maxc; // рандомные числа от 0 до 2^32
     }
 };
 
@@ -71,7 +72,7 @@ void Delete(node* p) {
 void printPriority(node* root) {
     if (!root)
         return;
-    cout<<"Приоритет ключа ["<< root->key <<"] - "<<root->prior<<endl;
+    cout<<"Приоритет ключа ["<<setw(5)<<right<< root->key <<"] - "<<setw(11)<<right<<root->prior<<endl;
     printPriority(root->right);
     printPriority(root->left);
 }
@@ -170,8 +171,7 @@ int main() {
         printtree(treap,0);
         cout<<"---------------------------"<<endl<<"Введите ключ, который хотите добавить"<<endl;
         if(isdigit(cin.peek())) {
-		    cin >> el;
-			cout<<el<<endl;
+	    cin >> el;
             treap = add(treap, el);
             printtree(treap,0);
             Delete(treap);
@@ -179,6 +179,10 @@ int main() {
             delete tok;
             delete[] arr;
             cout<<"Введите следующую команду:\n";
-		}
+	}
+	else {
+	    cout<<"Некорректные данные!"<<endl;
+	    return 0;
+	}
 }
 }
