@@ -31,6 +31,13 @@ bool is_root(const CodeTree *node) {
 
 static void fill_symbols_map(const CodeTree *node, const CodeTree **symbols_map);
 
+bool checkString(const string &message) {
+    for (int i = 1; i < message.size(); i++) {
+        if (message[0] != message[i]) return false;
+    }
+    return true;
+}
+
 char *encode(const CodeTree *tree, const string &message) {
     unsigned int firstLength = 1000;
     char *code = new char[firstLength];
@@ -42,27 +49,34 @@ char *encode(const CodeTree *tree, const string &message) {
     int len = message.size();
     unsigned int index = 0;
     char path[UCHAR_MAX];
-    for (int i = 0; i < len; ++i) {
-        const CodeTree *node = symbols_map[message[i] - CHAR_MIN];
-        int j = 0;
-        while (!is_root(node)) {
-            if (node->parent->left == node)
-                path[j++] = '0';
-            else
-                path[j++] = '1';
-            node = node->parent;
-        }
-        while (j > 0) {
-            if (index >= firstLength) {
-                code = resize(code, firstLength);
+    if (!checkString(message)) {
+        for (int i = 0; i < len; ++i) {
+            const CodeTree *node = symbols_map[message[i] - CHAR_MIN];
+            int j = 0;
+            while (!is_root(node)) {
+                if (node->parent->left == node)
+                    path[j++] = '0';
+                else
+                    path[j++] = '1';
+                node = node->parent;
             }
-            code[index++] = path[--j];
+            while (j > 0) {
+                if (index >= firstLength) {
+                    code = resize(code, firstLength);
+                }
+                code[index++] = path[--j];
+            }
+        } } else {
+        while (index < message.size()) {
+            code[index++] = '0';
         }
     }
     code[index] = 0;
     delete[] symbols_map;
     return code;
 }
+
+
 
 char *resize(char *prevArr, unsigned int &sizeOfCode) {
     unsigned int newSize = sizeOfCode * 2;

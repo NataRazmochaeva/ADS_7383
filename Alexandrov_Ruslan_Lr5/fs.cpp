@@ -3,7 +3,7 @@
 #include <climits>
 #include <string>
 #include <cstring>
-
+#include <iostream>
 using namespace std;
 
 static int middle(const Symbol *symbols, int l, int sum, int &lsum, int &rsum);
