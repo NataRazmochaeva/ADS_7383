@@ -71,22 +71,79 @@ int full_b_tree(b_tree* tree, string str){
     return count+current_count+1;
 }
 
-void pr_b_tree(b_tree* tree, int level, int is_right){
-    if(is_right){
-        for(int i = 0; i < level; i++)
-            cout << "    ";
-    }
-    cout << "   " << tree->a;
-    if(tree->left == NULL)
-        cout << endl;
-    else
-        pr_b_tree(tree->left, level+1, 0);
-    if(tree->right == NULL)
-        return;
-    else
-        pr_b_tree(tree->right, level+1, 1);
-    return;
+struct trunk{
+	trunk* prev;
+	string str;
+	trunk(trunk* prev, string str){
+		this->prev = prev;
+		this->str = str;	
+	}
+};
+
+void show_tr(trunk* p, int &count){
+	if(p == NULL)
+		return;
+	show_tr(p->prev, count);
+	count++;
+	cout << p->str;
 }
+
+void PR_b_tree(b_tree* tree, trunk* prev, bool is_right){
+	if(tree == NULL)
+		return;
+	string prev_str = "    ";
+	trunk* tmp = new trunk(prev, prev_str);
+	PR_b_tree(tree->right, tmp, 1);
+	if(!prev)
+		tmp->str = "---";
+	else if(is_right){
+		tmp->str = ".---";
+		prev_str = "   |";	
+	} else {
+		tmp->str = "`---";
+		prev->str = prev_str;	
+	}
+	int count = 0;
+	show_tr(tmp, count);
+	cout << tree->a << endl;
+
+	if(prev)
+		prev->str = prev_str;
+	tmp->str = "   |";
+	PR_b_tree(tree->left, tmp, 0);
+}
+
+void PR_forest(forest* f_tree, trunk* prev, bool is_right){
+	if(f_tree == NULL){
+		return;
+    }
+	string prev_str = "    ";
+	trunk* tmp = new trunk(prev, prev_str);
+    int count_br = f_tree->count - 1;
+    while(count_br > 0){
+    	PR_forest(f_tree->branch[count_br], tmp, 1);
+        count_br--;
+    }
+	if(!prev)
+		tmp->str = "---";
+	else if(is_right){
+		tmp->str = ".---";
+		prev_str = "   |";	
+	} else {
+		tmp->str = "`---";
+		prev->str = prev_str;	
+	}
+	int count = 0;
+	show_tr(tmp, count);
+	cout << f_tree->a << endl;
+
+	if(prev)
+		prev->str = prev_str;
+	tmp->str = "   |";
+    if(f_tree->count != 0)
+	    PR_forest(f_tree->branch[0], tmp, 0);
+}
+
 void process(b_tree* tree, forest* f_tree){
     f_tree->branch[f_tree->count] = new forest;
     f_tree->branch[f_tree->count]->count = 0;
@@ -96,21 +153,6 @@ void process(b_tree* tree, forest* f_tree){
         process(tree->left, f_tree->branch[f_tree->count-1]);
     if(tree->right != NULL)
         process(tree->right, f_tree);
-}
-
-int pr_forest(forest* f_tree, int level, int flag){
-    int i = 0;
-    if(flag)
-        for(int k = 0; k < level; k++)
-            cout << "    ";
-    cout << "   " << f_tree->a;
-    if(f_tree->count == 0){
-        cout << endl;
-    }
-    else{
-        for(i = 0; i < f_tree->count; i++)
-            pr_forest(f_tree->branch[i], level+1, i);
-    }
 }
 
 int pr_elem(forest* f_tree, int cur_level, int level){
@@ -171,13 +213,13 @@ int work_with_console(){
         return 0;
     }
     cout << "Бинарное дерево:" << endl;
-    pr_b_tree(tree, 0, 0);
+    PR_b_tree(tree, NULL, 0);
     forest* f_tree = new forest;
     f_tree->a = '*';
     f_tree->count = 0;
     process(tree, f_tree);
     cout << "Лес:" << endl;
-    pr_forest(f_tree, 0, 0);
+    PR_forest(f_tree, NULL, 0);
     cout << "Перечисление элементов в горизонтальном порядке:" << endl;
     pr_elements(f_tree);
     del_b_tree(tree);
@@ -188,7 +230,7 @@ int work_with_console(){
 }
 
 int work_with_file(){
-    cout << "Введите имя файла, в котором записано выражение и значения переменных" << endl;
+    cout << "Введите имя файла, в котором записано выражение" << endl;
     string file_name;
     cin >> file_name;
     ifstream f;
@@ -204,14 +246,18 @@ int work_with_file(){
     while((i=str.find(' '))!=std::string::npos)
         str.erase(i, 1);
     b_tree* tree = new b_tree;
-    full_b_tree(tree, str);
+    int count = full_b_tree(tree, str);
+    if(count == -1){
+        cout << "Неверная строка!" << endl;
+        return 0;
+    }
     cout << "Бинарное дерево:" << endl;
-    pr_b_tree(tree, 0, 0);
+    PR_b_tree(tree, NULL, 0);
     forest* f_tree = new forest;
     f_tree->a = '#';
     process(tree, f_tree);
     cout << "Лес:" << endl;
-    pr_forest(f_tree, 0, 0);
+    PR_forest(f_tree, NULL, 0);
     cout << "Перечисление элементов в горизонтальном порядке:" << endl;
     pr_elements(f_tree);
     del_b_tree(tree);
