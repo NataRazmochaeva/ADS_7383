@@ -75,11 +75,14 @@ int main()
                     throw new my_ex("Empty.");
 
                 break;
+            default:
+                throw new my_ex("Wrong integer.");
             }
 
             str_buf.str(temp_str);
             temp_str.clear();
 
+            //Building binary tree:
             BST<char>* root;
             root = read_stream<char>(is_str);
 
@@ -89,11 +92,14 @@ int main()
             printBST(root);
             cout << endl;
 
+            //Adding extra element:
             cout << "Enter an element:" << endl;
             char ch;
             cin >> ch;
             cin.ignore();
-            add_el(ch, root);
+            srand(ch);
+            if(!root->find(rand()))
+                root->add_rand(ch);
             printBST(root);
             cout << endl;
 
