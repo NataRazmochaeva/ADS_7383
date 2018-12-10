@@ -37,7 +37,7 @@ int full_b_tree(b_tree* tree, string str){
         str = tmp;
         current_count = 2;
     } else {
-        tree->a = '0';
+        tree->a = ' ';
         tmp = str.substr(1);
         str = tmp;
         current_count = 1;
