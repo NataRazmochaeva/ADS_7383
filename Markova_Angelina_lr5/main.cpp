@@ -158,7 +158,7 @@ int main() {
 	        cout<<"Некорректные данные!"<<endl;
                 return 0;
 	    }
-            if (find(treap,c)) {
+	    if (find(treap,c)) {
                 cout << "Ключ [" << c << "] повторяется"<<endl; // повторение ключа не допустимо, тк должен быть уникальным
                 tok = strtok(NULL, " ");
                 continue;
@@ -171,6 +171,9 @@ int main() {
         printtree(treap,0);
         cout<<"---------------------------"<<endl<<"Введите ключ, который хотите добавить"<<endl;
         if(isdigit(cin.peek())) {
+            cin.clear();
+	    cin.ignore(1000, '\n');
+	    cout<<"Введите только число!"<<endl;
 	    cin >> el;
             treap = add(treap, el);
             printtree(treap,0);
