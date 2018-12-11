@@ -5,7 +5,7 @@ using namespace std;
 
 namespace binTree_modul
 {
-	node* Mem = new node[100];
+	node* Mem = new node;
 	bool isNull(int b){
 		return (b == 0);
 	}
