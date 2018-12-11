@@ -13,6 +13,25 @@ private:
     int sz;
     BST* lf;
     BST* rt;
+
+    void rebuild(BST<BASE>* el)
+    {
+        BASE tmp_vl = this->value();
+        this->set_vl(el->value());
+        el->set_vl(tmp_vl);
+        el->set_lf(this->left());
+        el->set_rt(this->right());
+        if(tmp_vl < this->value())
+        {
+            this->set_lf(el);
+            this->set_rt(nullptr);
+        }
+        else
+        {
+            this->set_rt(el);
+            this->set_lf(nullptr);
+        }
+    }
 public:
     BST()
     {
@@ -66,8 +85,9 @@ public:
         }
     }
 
-    bool find(int key, bool flag=false)
+    bool find(int key)
     {
+        bool flag=false;
         if(this)
         {
             if(key == this->key())
@@ -78,25 +98,6 @@ public:
         }
         else
             return flag;
-    }
-
-    void rebuild(BST<BASE>* el)
-    {
-        BASE tmp_vl = this->value();
-        this->set_vl(el->value());
-        el->set_vl(tmp_vl);
-        el->set_lf(this->left());
-        el->set_rt(this->right());
-        if(tmp_vl > this->value())
-        {
-            this->set_lf(el);
-            this->set_rt(nullptr);
-        }
-        else
-        {
-            this->set_rt(el);
-            this->set_lf(nullptr);
-        }
     }
 
     void add_rand(BASE val)
