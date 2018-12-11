@@ -41,6 +41,30 @@ int main()
     for(int i = 0 ; i < persons; i++)
         concts[i] = new int[persons];
 
+
+    for(int i = 0; i < persons; i++)
+    {
+        for(int j = 0; j < persons; j++)
+        {
+            file2 >> concts[i][j];
+
+            if(file2.eof() && j != persons)             //Обработка ошибки нехватки данных из открытого файла
+            {
+                cout << endl << "Ошибка: недостаточно данных для таблицы родства" << endl;
+                exit(1);
+            }
+        }
+    }
+
+    int kk=-1;
+    file2 >> kk;
+    if (kk!=-1)
+    {
+        cout << endl << "Ошибка: в файле с таблицей родства присутствуют лишние символы" << endl;
+        exit(1);
+    }
+
+
     cout << endl << "Таблица смежности:" << endl << "\x1b[4m"<< " |";
     for(int i = 0; i < persons; i++)
         cout << " " << i;
@@ -51,11 +75,6 @@ int main()
         for(int j = 0; j < persons; j++)
         {
             file2 >> concts[i][j];
-            if(file2.eof() && j != persons)             //Обработка ошибки нехватки данных из открытого файла
-            {
-                cout << endl << "Ошибка: недостаточно данных для таблицы родства" << endl;
-                exit(1);
-            }
             cout << concts[i][j] << ' ';
         }
         cout << endl;
@@ -71,7 +90,7 @@ int main()
 
     Queue *queue = new Queue;
 
-    find_child(0, index_of_name(name, names, persons), concts, queue, persons);		//Найдем и запишем рекурсивно детей для nameю
+    find_child(0, index_of_name(name, names, persons), concts, queue, persons);		//Найдем и запишем рекурсивно детей для имени
 
     print_queue(0, queue, names, fout);								//Выведем список потомков.
     fout.close();
