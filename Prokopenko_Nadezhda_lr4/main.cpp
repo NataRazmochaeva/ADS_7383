@@ -19,7 +19,7 @@ void goriz(int index, Tree<T>** b, ofstream &fout)
     while (!q.Empty())// пока очередь не пуста
     {
         index = q.Get();//Убираем из очереди индекс элемента дерева
-        if(!b[index]->flag)
+        if(!b[index]->isNull())
         fout << b[index]->GetInfo() << " ";
         if (!b[index]->isNull()) //если слева есть элемент то заносим его индекс в очередь
         {
