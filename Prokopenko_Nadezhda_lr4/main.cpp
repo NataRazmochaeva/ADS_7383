@@ -7,26 +7,24 @@
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
+#include <sstream>
 #include <cstdlib>
 #include "btree.h"
 #include "queue.h"
+#define TYPE char
 using namespace std;
 template <typename T>
-void goriz(int index, Tree<T>** b, ofstream &fout)
+void goriz(int index, Tree<TYPE>** b, ofstream &fout)
 {
-    Queue <int> q;
+    Queue <TYPE> q;
     q.Put(index);//заношу в очередь индекс корневого элемента дерева
     while (!q.Empty())// пока очередь не пуста
     {
         index = q.Get();//Убираем из очереди индекс элемента дерева
-        if(!b[index]->isNull())
-        fout << b[index]->GetInfo() << " ";
-        if (!b[index]->isNull()) //если слева есть элемент то заносим его индекс в очередь
+        if (!b[index]->isNull()) //если есть элемент то заносим его индекс в очередь
         {
+            fout << b[index]->GetInfo() << " ";
             q.Put(b[index]->Left());
-        }
-        if (!b[index]->isNull())//если справа есть элемент то заносим его индекс в очередь
-        {
             q.Put(b[index]->Right());
         }
     }
@@ -34,14 +32,11 @@ void goriz(int index, Tree<T>** b, ofstream &fout)
 
 
 int main() {
-    Tree<int> *b[100];
-    for(int i=0; i<100;i++){
-        b[i]= new Tree<int>();
-    }
     int input;
     string file_name;
     fstream file;
     ofstream fout;
+    string c;
     while(true){
         cout << "------------------------------\n";
         cout << "Входные данные \n";
@@ -59,23 +54,28 @@ int main() {
                 break;
             }
             else{
-                enterBT(0, b, file);
-                goriz(0, b, fout);
+                getline(file, c);
+                Tree<TYPE> **b = new Tree<TYPE>*[c.length()];
+                for(unsigned int i = 0; i < c.length();i++){
+                    b[i]= new Tree<TYPE>();
+                }
+                stringstream s;
+                s << c;
+                enterBT(0, b, s);
+                goriz<TYPE>(0, b, fout);
                 cout << endl << "вывод ответа в файле\n";
-            }
-            file.close();
-            fout.close();
-            break;
-
+                for(unsigned int i=0; i<c.length();i++){
+                      delete b[i];
+                }
+           }
+           file.close();
+           fout.close();
+           break;
         case 2:
-            for(int i=0; i<100;i++){
-                delete b[i];
-            }
-            return 0;
-
+           return 0;
         default:
-            cout << "Enter again.\n";
-            break;
+           cout << "Enter again.\n";
+           break;
         }
     }
 return 0;
