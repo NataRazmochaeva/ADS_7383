@@ -8,7 +8,7 @@
 using namespace std;
 
 enum key{
-    op_found =   -2,
+    op_found = -2,
     smth_wrong = -1,
 };
 
@@ -36,7 +36,7 @@ typedef pairs Pairs;
 void errors(int err) {
     switch(err) {
         case 1:
-            cerr<<"Неверный ввод."<<endl;
+            cerr<<"1Неверный ввод."<<endl;
             break;
         case 2:
             cerr<<"Деление на нуль."<<endl;
@@ -44,12 +44,43 @@ void errors(int err) {
         case 3:
             cerr<<"Не хвататет значений, констант или знаков. Проверьте введенные данные и повторите попытку."<<endl;
             break;
-        case 4:
-            cerr << "Неверный ввод."<<endl;
-            break;
         default:
             break;
     }
+}
+
+struct STACK{
+	float arr[100];
+	short topIndex;
+	bool flag;
+};
+typedef struct STACK stack;
+
+void push(stack* Stack, float value){
+	(Stack->topIndex)++;
+	if(Stack->topIndex == 100){
+		printf("Стек переполнен!\n");
+		exit(1);
+	}
+	Stack->arr[Stack->topIndex] = value;
+}
+void mul(stack *Stack){
+		Stack->arr[Stack->topIndex-1] *= Stack->arr[Stack->topIndex];
+    Stack->topIndex--;
+}
+void add(stack *Stack){
+		Stack->arr[Stack->topIndex-1] += Stack->arr[Stack->topIndex];
+    Stack->topIndex--;
+}
+void sub(stack *Stack){
+		Stack->arr[Stack->topIndex-1] -= Stack->arr[Stack->topIndex];
+    Stack->topIndex--;
+}
+void div(stack *Stack){
+  if (Stack->arr[Stack->topIndex] != 0)
+    Stack->arr[Stack->topIndex-1] /= Stack->arr[Stack->topIndex];
+  else cout << "Деление на 0." << endl;
+  Stack->topIndex--;
 }
 
 lisp cons (const lisp h, const lisp t){
@@ -116,7 +147,6 @@ void read_lisp(string array,lisp* head,int* ptr){
         num3=read_s_expr(array,ptr);
         lisp p12;
         if(num3==smth_wrong || num2==smth_wrong){
-            errors(1);
             return;
         }
         if(num3!=smth_wrong && num3!=op_found){
@@ -138,7 +168,6 @@ void read_lisp(string array,lisp* head,int* ptr){
     }else if(num==op_found && (*ptr)!= 0){
         (*head)=make_char_atom(array[(*ptr)-2]);
     }else{
-        errors(1);
         return ;
     }
 }
@@ -207,42 +236,6 @@ void destroy (lisp s) {
     };
 }
 
-float eval(string str,int &i)
-{
-    float x = 0.0;
-    while (str[i]==' ') i--;
-
-    if (str[i] == '+')
-    {
-        i--;
-        return eval(str,i)+eval(str,i);
-    }
-
-    if (str[i] == '*')
-    {
-        i--;
-        return eval(str,i)*eval(str,i);
-    }
-
-    if (str[i] == '/')
-    {
-        i--;
-        return 1.0/(eval(str,i)/eval(str,i));
-    }
-
-    if (str[i] == '-')
-    {
-        i--;
-        return -1*(eval(str,i)-eval(str,i));
-    }
-    int w=1;//"вес" очередной цифры
-    while((str[i] >= '0') && (str[i] <= '9')){
-        x = x + (str[i--] - '0')*w;
-        w*=10;
-    }
-    return x;
-}
-
 Pairs pairs(int n, string str, Pairs pp[],int &Err) {//создает пару переменная-константа
   int ptr=2, i=0;
   while (str[ptr] != '\0') {
@@ -255,7 +248,7 @@ Pairs pairs(int n, string str, Pairs pp[],int &Err) {//создает пару �
     ptr+=1;
   }
   if (n>i){
-      cerr<<"Malo par"<<endl; //придумать выход из программы при ошибке
+      cerr<<"Мало пар."<<endl; //придумать выход из программы при ошибке
       Err = 1;
   }
   return *pp;
@@ -273,74 +266,110 @@ string comp_pair(int n, string array, Pairs pp[]){//заменяет перем�
   return array;
 }
 
+void process(string array, string str) {
+  stack* Stack = new stack;
+  Stack->topIndex = -1;
+  for (int i=0;i<100;i++)
+  Stack->arr[i] = 0;
+  Stack->flag = true;
+  lisp head=NULL;
+  bool flag;
+  flag=false;
+  int ptr=0,i=0,j=0,Err=0;
+  Pairs pp[26];
+  char sym[100];
+  char sygn[100];
+  int n=0,k=0;
+  int len = array.size()-1;
+  int number = count(array);
+  *pp = pairs(number, str, pp,Err);
+  for(int i =0; i < number; i++){
+    cout<<"[" << pp[i].var << " " << pp[i].con << "]" << endl;
+  }
+  array = comp_pair(number, array, pp);
+  for (int i=0;i<array.size();i++){
+    if (isdigit(array[i])){
+      push(Stack,array[i]-'0');
+    }
+    if (array[i] == '*'){
+      mul(Stack);
+    }
+    if (array[i] == '/'){
+      div(Stack);
+    }
+    if (array[i] == '+'){
+      add(Stack);
+    }
+    if (array[i] == '-'){
+      sub(Stack);
+    }
+  }
+  for (int i=0;i<array.size();i++){
+    if (isalpha(array[i]) || isdigit(array[i])){
+      sym[n++]=array[i];
+    }
+    if (ispunct(array[i])){
+      sygn[k++]=array[i];
+    }
+  }
+  sym[n]='\0';
+  sygn[k]='\0';
+  int l=0,m=0;
+  for (int i=0;i<array.size();i++){
+    if (isalnum(array[i]) || ispunct(array[i])){
+      if (l<n){
+        array[i] = sym[l];
+        l++;
+      }
+       else if (m<k){
+        array[i]=sygn[k-1-m];
+        m++;
+      }
+
+  }
+}
+  read_lisp(array,&head,&ptr);
+  if(head!=NULL && ptr==array.length()+1)
+      if(write(head,i,j,&flag) && flag==false)
+          cout<< "Корректный ввод."<<endl;
+  if(head!=NULL && ptr< array.length()+1){
+      cerr<<"3Неверный ввод."<<endl;
+      return;
+    }
+  float x = Stack->arr[Stack->topIndex];
+  cout << "Ответ: " << x << endl;
+  destroy(head);
+}
+
 int main(){
-    int num=0;
-    while(num != 3){
+    char num=0;
+    while(num != 'q'){
         cout << "Выберите дальнейшие действия и введите цифру:"<<endl;
         cout << "1. Ввести выражение вручную."<<endl;
         cout << "2. Считать выражение из файла test1.txt."<<endl;
-        cout << "3. Завершить работу."<<endl;
+        cout << "q. Завершить работу."<<endl;
         cin >> num;
         switch(num){
-            case 1:{
+            case '1': {
                 getchar();
                 string array, str;
                 getline(cin,array);
                 getline(cin,str);
-                lisp head=NULL;
-                bool flag;
-                flag=false;
-                int ptr=0,i=0,j=0,Err=0;
-                Pairs pp[26];
-                read_lisp(array,&head,&ptr);
-                if(head!=NULL && ptr==array.length()+1)
-                    if(write(head,i,j,&flag) && flag==false)
-                        cout<< "Корректный ввод."<<endl;
-                if(head!=NULL && ptr< array.length()+1)
-                    cerr<<"Неверный ввод."<<endl;
-                int len = array.size()-1;
-                int n = count(array);
-                *pp = pairs(n, str, pp,Err);
-                for(int i =0; i < n; i++){
-                  cout<<"[" << pp[i].var << " " << pp[i].con << "]" << endl;
-                }
-                array = comp_pair(n, array, pp);
-                float x = eval(array,len);
-                cout << x << endl;
-                destroy(head);
+                process(array, str);
                 break;
             }
-            case 2:{
+            case '2': {
                 getchar();
                 string array, str;
                 ifstream infile("test.txt");
                 getline(infile,array);
                 getline(infile,str);
                 infile.close();
-                lisp head=NULL;
-                bool flag;
-                flag = false;
-                int ptr=0,i=0,j=0,Err=0;
-                Pairs pp[26];
-                read_lisp(array,&head,&ptr);
-                if(head!=NULL && ptr==array.length()+1)
-                    if(write(head,i,j,&flag) && flag==false)
-                        cout<< "Корректный ввод."<<endl;
-                if(head!=NULL && ptr< array.length()+1)
-                    cerr<<"Неверный ввод."<<endl;
-                int len = array.size()-1;
-                int n = count(array);
-                *pp = pairs(n, str, pp,Err);
-                for(int i =0; i < n; i++){
-                  cout<<"[" << pp[i].var << " " << pp[i].con << "]" << endl;
-                }
-                array = comp_pair(n, array, pp);
-                float x = eval(array,len);
-                cout << x << endl;
-                destroy(head);
+                cout << array <<endl <<str <<endl;
+                process(array, str);
                 break;
             }
-            case 3:
+            case 'q':
                 return 0;
             default:
                 cerr << "Проверьте введенные данные и повторите попытку." << endl;
