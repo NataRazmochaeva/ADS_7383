@@ -197,7 +197,7 @@ void del_b_tree(elem* root){
 int check_str(string str){
     for(int i = 0; i < str.length(); i++){
         if(!isdigit(str[i]))
-            if(str[i] == '-')
+            if((str[i] == '-') || (str[i]== ' '))
                 return -1;
             else
                 return 0;
@@ -217,28 +217,88 @@ int work_with_console(){
     cout << "Введите элменты дерева через пробел" << endl;
     int tmp = 0;
     char str[256];
+    string str1;
     elem* root = new elem;
     root->left = NULL;
     root->right = NULL;
-    cin >> str;
-    if(check_str(str))
-        tmp = atoi(str);
-    else{
+    getline(cin, str1);
+    getline(cin, str1);
+    if(!check_str(str1)){
         cout << "неверное выражение" << endl;
         return 0;
     }
-    root->val = tmp;
-    root->left = NULL;
-    root->right = NULL;
-    f_height(root);
-    while(std::cin.peek() != '\n'){
-        cin >> str;
-        if(check_str(str))
-            tmp = atoi(str);
-        else{
-            cout << "неверное выражение" << endl;
+    for(int i = 0; i < str1.length(); i++)
+        if(str1[i] == '-'){
+            if(i == str1.length()-1){
+                cout << "неверное выражение" << endl;
+                return 0;
+            }
+            if(!isdigit(str1[i+1])){
+                cout << "неверное выражение" << endl;
+                return 0;
+            }
+        }
+    int flag = 0;
+    int current_s = 0;
+    int current_c = 0;
+    while(!flag){
+        if(str1[current_s] == ' ')
+            current_s++;
+        else
+            flag = 1;
+        if(current_s == str1.length()){
+            cout << "неверное  выражение" << endl;
             return 0;
         }
+    }
+    while(flag){
+        if(isdigit(str1[current_s]) || (str1[current_s] == '-')){
+            str[current_c] = str1[current_s];    
+            current_s++;
+            current_c++;
+        } else{
+            flag = 0;
+        }
+    }
+    tmp = atoi(str);
+    for(int i = 0; i < current_c; i++)
+        str[i] = 0;
+    current_c = 0;
+    root->val = tmp;
+    f_height(root);
+    int end_flag = 0;
+    while(!end_flag){
+        
+        while(!flag){
+            if(current_s == str1.length()){
+                end_flag = 1;
+                break;
+            }
+            if(str1[current_s] == ' ')
+                current_s++;
+            else
+                flag = 1;
+        }
+        if(end_flag)
+            break;
+        while(flag){
+            if(current_s == str1.length()){
+                end_flag = 1;
+                break;
+            }
+            if(isdigit(str1[current_s]) || (str1[current_s] == '-')){
+                str[current_c] = str1[current_s];    
+                current_s++;
+                current_c++;
+            } else{
+                flag = 0;
+            }
+        }
+        tmp = atoi(str);
+        for(int i = 0; i < current_c; i++)
+            str[i] = 0;
+        current_c = 0;
+
         add_to_tree(root, tmp);
         f_height(root);
         tmp = check_tree(root);
@@ -283,7 +343,7 @@ int work_with_file(){
     root->val = tmp;
     root->left = NULL;
     root->right = NULL;
-    f_height(root);
+    f_height(root); 
     while(!f.eof()){
         f >> str;
         if(check_str(str))
