@@ -21,6 +21,9 @@ struct binTree {                     //бинарное дерево
         delete [] storage;              //очистка массива(освобождение памяти, выделенной командой new[])
     }
     void print_tree(int i,int depth) {  //функция печати дерева
+        if (storage[i].right>0) { //если есть правый сын
+            binTree::print_tree(storage[i].right,depth-1);      //печаает поддерево правого сына и умньшает значение глубины дерева
+        }
         std::string tabs(depth,'-');    //с увелечением глубины увеличиваем кол-во "-", конструктор для класса строк
         if (storage[i].value) {         //если корень
             std::cout.width(this->depth+3);                     //задаёт ширину поля, this - переменная, указывающая какой тип данных хранится(объект класса), для выравнивания по правому краю
@@ -29,9 +32,7 @@ struct binTree {                     //бинарное дерево
         if (storage[i].left>0) { //если есть левый сын
             binTree::print_tree(storage[i].left,depth-1);       //печатает поддерево левого сына и уменьшает значение глубины дерева
         }
-        if (storage[i].right>0) { //если есть правый сын
-            binTree::print_tree(storage[i].right,depth-1);      //печаает поддерево правого сына и умньшает значение глубины дерева
-        }
+
     }
     struct bt_element { //структура элемента массива
         Type value; //корень, используем любой тип
@@ -61,17 +62,18 @@ struct Forest {
             delete [] storage[i].sons;         //очистка памяти, выделенной под сыновей
         delete [] storage;                     //очистка структур леса
     }
-    void print_forest(int i,int depth) {       //функция печати леса
-        std::string tabs(depth+1,'-');         //с увеличением глубины увеличиваем "-"
-        int j=0;                               //кол-во сыновей(кол-во напечатанных)
-        if (storage[i].value) {                //если корень
-            std::cout.width(this->depth+3);                        //задаем ширину поля
-            std::cout << storage[i].value + tabs << std::endl;     //выводим значение элемента дерева
-        }
+    void print_forest(int i,int depth) {
+        int j=0; //функция печати леса
         while (storage[i].sons[j]>-1) {                            //пока есть сыновья
             Forest::print_forest(storage[i].sons[j],depth-1);      //выводим сына
             j++;                                                   //перемещаемся по массиву сыновей
         }
+        std::string tabs(depth+1,'-');         //с увеличением глубины увеличиваем "-"                              //кол-во сыновей(кол-во напечатанных)
+        if (storage[i].value) {                //если корень
+            std::cout.width(this->depth+3);                        //задаем ширину поля
+            std::cout << storage[i].value + tabs << std::endl;     //выводим значение элемента дерева
+        }
+
     }
     void print_horizontal(std::string * out,int i, int level) {    //функция обхода леса в ширину, указатель на массив строк(каждый уровень отдельно)
         int j=0;                                                   //кол-во сыновей

@@ -11,13 +11,26 @@ int main() {
 
     std::cout << "\033[34m\tЗдравствуйте!Выберите что вы хотите:\033[0m\n 1) Нажмите 1, чтобы считать с файла.\n 2) Нажмите 2, чтобы считать с консоли.\n 3) Нажмите 3, чтобы выйти из программы.\n" << std::endl;
     while(run) {
-        if(check==0) {                        
+        if(check==0) {
             std::cout << "Ваши данные:" << str << std::endl;
             for (int i=0; i<(str.length()); i++) {
+                if(str.length() < 3) {
+                    std::cout << "Error0" << std::endl;
+                    return 0;
+                }
                 if (str[i]=='(')
                     level++;
                 if (str[i]==')')
                     level--;
+                if (str[i] == '(' && isalnum(str[i+1]) && !(str[i+2] == ')' || str[i+2] == '(')) {
+                    std::cout << str[i] << str[i+1] << str[i+2] << std::endl;
+                    std::cout << "Error" << std::endl;
+                    return 0;
+                }
+                if (isdigit(str[i])) {
+                    std:: cout << "Error_num" << std::endl;
+                    return 0;
+                }
                 if (bt_depth<level) bt_depth=level;
             }
 
