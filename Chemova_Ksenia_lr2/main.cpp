@@ -36,7 +36,7 @@ typedef pairs Pairs;
 void errors(int err) {
     switch(err) {
         case 1:
-            cerr<<"1Неверный ввод."<<endl;
+            cerr<<"Неверный ввод."<<endl;
             break;
         case 2:
             cerr<<"Деление на нуль."<<endl;
@@ -50,30 +50,30 @@ void errors(int err) {
 }
 
 struct STACK{
-	float arr[100];
-	short topIndex;
-	bool flag;
+        float arr[100];
+        short topIndex;
+        bool flag;
 };
 typedef struct STACK stack;
 
 void push(stack* Stack, float value){
-	(Stack->topIndex)++;
-	if(Stack->topIndex == 100){
-		printf("Стек переполнен!\n");
-		exit(1);
-	}
-	Stack->arr[Stack->topIndex] = value;
+        (Stack->topIndex)++;
+        if(Stack->topIndex == 100){
+                printf("Стек переполнен!\n");
+                exit(1);
+        }
+        Stack->arr[Stack->topIndex] = value;
 }
 void mul(stack *Stack){
-		Stack->arr[Stack->topIndex-1] *= Stack->arr[Stack->topIndex];
+                Stack->arr[Stack->topIndex-1] *= Stack->arr[Stack->topIndex];
     Stack->topIndex--;
 }
 void add(stack *Stack){
-		Stack->arr[Stack->topIndex-1] += Stack->arr[Stack->topIndex];
+                Stack->arr[Stack->topIndex-1] += Stack->arr[Stack->topIndex];
     Stack->topIndex--;
 }
 void sub(stack *Stack){
-		Stack->arr[Stack->topIndex-1] -= Stack->arr[Stack->topIndex];
+                Stack->arr[Stack->topIndex-1] -= Stack->arr[Stack->topIndex];
     Stack->topIndex--;
 }
 void div(stack *Stack){
@@ -236,7 +236,7 @@ void destroy (lisp s) {
     };
 }
 
-Pairs pairs(int n, string str, Pairs pp[],int &Err) {//создает пару переменная-константа
+Pairs pairs(int n, string str, Pairs pp[], int &Err) {//создает пару переменная-константа
   int ptr=2, i=0;
   while (str[ptr] != '\0') {
       if (!isspace(str[ptr]) && str[ptr] != '(' && str[ptr] != ')'){
@@ -254,15 +254,21 @@ Pairs pairs(int n, string str, Pairs pp[],int &Err) {//создает пару �
   return *pp;
 }
 
-string comp_pair(int n, string array, Pairs pp[]){//заменяет переменную на число в строке
+string comp_pair(int k, int n, string array, Pairs pp[]){//заменяет переменную на число в строке
 
-  int i, j=0;
-  for (i=0; i<n; i++) {
-    while (array[2*i]!=pp[j].var)
-      j++;
+  int i=0, j=0;
+  for (i=0; i<=k; i++) {
+    if (n==-1)
+      return array;
+    if (isalpha(array[2*i])){
+      while (array[2*i]!=pp[j].var) {
+        j++;
+      }
     array[2*i]=pp[j].con;
+    n--;
     j = 0;
   }
+}
   return array;
 }
 
@@ -270,7 +276,7 @@ void process(string array, string str) {
   stack* Stack = new stack;
   Stack->topIndex = -1;
   for (int i=0;i<100;i++)
-  Stack->arr[i] = 0;
+    Stack->arr[i] = 0;
   Stack->flag = true;
   lisp head=NULL;
   bool flag;
@@ -280,14 +286,18 @@ void process(string array, string str) {
   char sym[100];
   char sygn[100];
   int n=0,k=0;
-  int len = array.size()-1;
+  int len = array.size();
   int number = count(array);
-  *pp = pairs(number, str, pp,Err);
+  cout << "num: " <<number<<endl;
+  *pp = pairs(number, str, pp, Err);
   for(int i =0; i < number; i++){
     cout<<"[" << pp[i].var << " " << pp[i].con << "]" << endl;
   }
-  array = comp_pair(number, array, pp);
-  for (int i=0;i<array.size();i++){
+  array = comp_pair(array.size(), number, array, pp);
+  for (int i=0; i<array.size();i++)
+    cout << array[i];
+    cout <<endl;
+  for (int i=0; i<array.size()+1;i++){
     if (isdigit(array[i])){
       push(Stack,array[i]-'0');
     }
@@ -333,7 +343,7 @@ void process(string array, string str) {
       if(write(head,i,j,&flag) && flag==false)
           cout<< "Корректный ввод."<<endl;
   if(head!=NULL && ptr< array.length()+1){
-      cerr<<"3Неверный ввод."<<endl;
+      cerr<<"Неверный ввод."<<endl;
       return;
     }
   float x = Stack->arr[Stack->topIndex];
