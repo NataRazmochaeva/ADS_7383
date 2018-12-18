@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include "btree.h"
 #include "queue.h"
-#define TYPE char
+#define TYPE int
 using namespace std;
 template <typename T>
 void goriz(int index, Tree<TYPE>** b, ofstream &fout)
