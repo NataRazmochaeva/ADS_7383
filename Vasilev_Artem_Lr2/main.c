@@ -115,7 +115,7 @@ int readBinCorElement(char * str, int index_1, int index_2, BinCor ** element)
         return 1;
     }
 
-    if (isdigit(str[index_1]) && str[index_1] != 0)// случай, если гирька
+    if (isdigit(str[index_1]) && str[index_1] != 0)// случай, если гирька cout<<"\t"
     {
         while(1)
         {
@@ -277,6 +277,110 @@ int createBinCor(char * str, BinCor ** binCor)
     return readBinCorElement(str, index_1, index_2, binCor);
 }
 
+
+/*void print_bin_kor(BinCor *binCor, unsigned int i)
+{
+    if (binCor->cor_2)  //1
+    {
+        for (unsigned int j=0; j<i; j++)
+            printf("\t");
+        printf ("\n(F1) %d", binCor->length_right);
+        print_bin_kor(binCor->cor_2, i++);
+    }
+    if (binCor->cor_1) //2
+    {
+        for (unsigned int j=0; j<i; j++)
+            printf("\t");
+        printf ("\n(F2) %d", binCor->length_left);
+        print_bin_kor(binCor->cor_1, i++);
+    }
+    if (!binCor->cor_2 && !binCor->cor_1) //3
+    {
+        for (unsigned int j=0; j<i; j++)
+            printf("\t");
+        printf ("\t(F3) %d; %d\n", binCor->length_right, binCor->weight_right);
+        printf ("\n\t(F3) %d; %d\n", binCor->length_left, binCor->weight_left);
+
+    }
+    if (!binCor->cor_1 && binCor->cor_2) //4
+    {
+        for (unsigned int j=0; j<i; j++)
+            printf("\t");
+        printf ("\n(F4) %d", binCor->length_right);
+        printf ("\n\t(F4) %d; %d\n", binCor->length_left, binCor->weight_left);
+        print_bin_kor(binCor->cor_2, i++);
+    }
+    if (binCor->cor_1 && !binCor->cor_2)  //5
+    {
+        for (unsigned int j=0; j<i; j++)
+            printf("\t");
+        printf ("\n\t(F5) %d; %d\n", binCor->length_right, binCor->weight_right);
+        printf ("\n(F5) %d", binCor->length_left);
+        print_bin_kor(binCor->cor_1, i++);
+
+    }
+*/
+
+/*void print_bin_kor (BinCor *binCor, int deep_of_recursion)
+{
+    if (binCor->cor_2 != NULL)
+        print_bin_kor(binCor->cor_2, deep_of_recursion++);
+    for (int i = 0; i < deep_of_recursion; i++)
+       printf("\t");
+    if (binCor->cor_2 == NULL)
+    {
+        printf("%d  ", binCor->length_right);
+        printf("%d(гирька)\n\n", binCor->weight_right);
+    }
+    else
+        printf("%d  ", binCor->length_right);
+
+
+    if (binCor->cor_1 != NULL)
+        print_bin_kor(binCor->cor_1, deep_of_recursion++);
+    for (int i = 0; i < deep_of_recursion; i++)
+       printf("\t");
+    if (binCor->cor_1 == NULL)
+    {
+        printf("%d  ", binCor->length_left);
+        printf("%d(гирька)\n\n", binCor->weight_left);
+    }
+    else
+        printf("%d  ", binCor->length_left);
+}*/
+
+void print_bin_kor(BinCor *binCor, int deep_of_recursion)
+{
+    for (int i = 0; i < deep_of_recursion; i++)
+       printf("\t");
+    printf("%d  ", binCor->length_right);
+
+    if (binCor->cor_2 == NULL)
+    {
+        printf("%d(гирька)\n\n", binCor->weight_right);
+    }
+    else
+    {
+        printf("\t\n");
+        print_bin_kor(binCor->cor_2, deep_of_recursion+1);
+    }
+
+    for (int i = 0; i < deep_of_recursion; i++)
+        printf("\t");
+    printf("%d  ", binCor->length_left);
+
+    if (binCor->cor_1 == NULL)
+    {
+        printf("%d(гирька)\n\n", binCor->weight_left);
+    }
+    else
+    {
+        printf("\t\n");
+        print_bin_kor(binCor->cor_1, deep_of_recursion+1);
+    }
+}
+
+
 //Возвращаемое значение равно длине всех плеч
 //в заданном бинарном коромысле
 short length(const BinCor binCor, int deep_of_recursion)
@@ -335,11 +439,11 @@ int main()
 {
     char str[N]; // строка для ввода
     BinCor * binCor = NULL; // бинарное коромысло
-    int in=0;
+    int in=0; //для определения способа ввода данных
 
 
     // начало считывания и обработки данных
-    printf("\nПрограмма выводит общее число гирек в указанном бинарном коромысле.\n");
+    printf("\nПрограмма выводит общую длину всех плеч в указанном бинарном коромысле.\n");
     printf("\nБинарное коромысло записывается в виде:\n");
     printf("(ПЛЕЧО ПЛЕЧО)\n");
     printf("Плечо имеет следующий вид:\n");
@@ -374,6 +478,10 @@ int main()
     }
     printf("\nВведены корректные данные.\n\n");
     // конец считывания и обработки данных
+
+    print_bin_kor(binCor, 0);
+
+    printf("\n\n\n");
 
     // вывод результата
     printf("Ход работы алгоритма:\n\n");
