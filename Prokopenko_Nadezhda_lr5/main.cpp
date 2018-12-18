@@ -7,15 +7,17 @@
 
 using namespace std;
 
+long long int maxc = pow(2,32);
+
 struct node {          // структура для представления узлов дерева
     int key;           // ключ-значение
-    long prior;   // приоритет
+    long long prior;   // приоритет
     node* left;        // указатель на левое поддерево
     node* right;       // указатель на правое поддерево
     node(int k) {
         key = k;       // инициализация структуры
         left = right = NULL;
-        prior = rand()%100; // рандомные числа
+        prior = rand()%maxc; // рандомные числа от 0 до 2^32
     }
 };
 
@@ -69,13 +71,16 @@ node* find( node* tree, int key) {
 }
 
 
-void Delete(node* p) {
-    if(p==NULL)
-        return;
-    Delete(p->left);
-    Delete(p->right);
+
+node* Delete(node* p){
+    if (left)
+        delete p->left;
+    if (right)
+        delete p->right;
     delete p;
+    return p = NULL;
 }
+
 
 void printPriority(node* root) {
     if (!root)
@@ -89,7 +94,7 @@ void printelements(node* root, ofstream &fout) {
     if (!root)
         return;
   printelements(root->left, fout);
-  cout<<root->key<<" ";
+  cout<<"Приоритет ключа ["<<right<< root->key <<"] - "<<right<<root->prior<<" ";
   fout <<root->key<< " ";
   printelements(root->right, fout);
 }
@@ -104,7 +109,7 @@ void printtree(node* treenode, int l) {
     printtree(treenode->right, l+1);
     for(int i = 0; i < l; i++)
         cout << "\t";
-    cout << treenode->key<< endl;
+    cout << treenode->key<<"["<<treenode->prior<<"]"<< endl;
     printtree(treenode->left,l+1);
 }
 
@@ -112,6 +117,8 @@ int main() {
     node* treap = NULL; // пирамида поиска
     int c, el=0;
     string str;
+    fstream infile;
+    ofstream fout;
     char forSwitch;
         while(1) {
           cout << "Выберите команду:"<< endl;
@@ -119,11 +126,12 @@ int main() {
           cout<<"2) Нажмите 2, чтобы считать с файла." << endl;
           cout<<"3) Нажмите 3, чтобы выйти из программы." << endl;
           ofstream fout("Output.txt");
+          fout.open("output.txt");
         cin >> forSwitch;
         getchar();
         switch (forSwitch) {
         case '2': {
-            ifstream infile("Test.txt");
+            infile.open("Test.txt");
             if(!infile) {
                 cout<<"Файл не может быть открыт!"<<endl;
                 cout<<"Введите следующую команду:\n";
@@ -169,10 +177,11 @@ int main() {
         printtree(treap,0);
         printelements(treap, fout);
         cout<<endl;
-            Delete(treap);
-            str.clear();
-            delete tok;
-            delete[] arr;
-            cout<<"Введите следующую команду:\n";
+        fout.close();
+        treap = Delete(treap);
+        str.clear();
+        delete tok;
+        delete[] arr;
+        cout<<"Введите следующую команду:\n";
 }
 }
