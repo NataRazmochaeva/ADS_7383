@@ -12,7 +12,7 @@ public:
 
 using namespace std;
 
-void buildTree(vector<Tree>&arr, int index, int max, char buffer[], int j) { //строит дерево на основе массива
+void buildTree(vector<Tree>&arr, int &index, int max, char buffer[], int j) { //строит дерево на основе массива
   if (index >= max)
     return;
   int stet = 0;
@@ -39,59 +39,80 @@ void buildTree(vector<Tree>&arr, int index, int max, char buffer[], int j) { //�
     arr[index].data = buffer[j];
     return;
   }
-  if (buffer[j] == '*' || buffer[j] == '+' || buffer[j] == '-')
+  if (buffer[j] == '*' || buffer[j] == '+' || buffer[j] == '-'){
     arr[index].data = buffer[j];
-  buildTree(arr, 2*index+1, max, buffer, k+1);
-  buildTree(arr, 2*(index+1), max, buffer, j+1);
+  }
+  index+=1;
+  buildTree(arr, index, max, buffer, k+1);
+  index+=1;
+  buildTree(arr, index, max, buffer, j+1);
 }
 
-void print(vector<Tree>&arr, int index, string &str, int max, int count) {  //печатает дерево
+void print(vector<Tree>arr, int &index, string &str, int max, int count) {  //печатает дерево
   if (index >= max)
     return;
-  print(arr,2*index+1,str,max,count+1);
   for (int i = 0;i < count;i++)
   str = str + "   ";
-  if (arr[index].data != '#')
-    str = str + "[" + arr[index].data + "]\n";
-  else str = str + "   \n";
-  print(arr, 2*(index+1), str, max, count+1);
+  str = str + "[" + arr[index].data + "]\n";
+  if (isalnum(arr[index].data))
+    return;
+  index+=1;
+  print(arr,index,str,max,count+1);
+  index+=1;
+  print(arr, index, str, max, count+1);
 }
 
-void prefix(vector<Tree>arr, unsigned int index) {  //преобразует в префиксную форму
+void prefix(vector<Tree>arr,int &index) {  //преобразует в префиксную форму
   if (index >= arr.size())
     return;
-  if (arr[index].data != '#')
-    cout << arr[index].data;
-  prefix(arr, 2*index+1);
-  prefix(arr, 2*(index+1));
+  cout << arr[index].data;
+  if (isalnum(arr[index].data))
+      return;
+  index++;
+  prefix(arr, index);
+  index++;
+  prefix(arr, index);
 }
 
-string change(vector<Tree>arr, int index, string Lskob, string Rskob, string answer) { // преобразует дерево-формулу в формулу этого дерева
-    if (index >= arr.size())
-        return answer;
-    if (arr[index].data == '#')
-        return answer;
-    if (arr[index].data == '*' || arr[index].data == '+' || arr[index].data == '-')
-        return Lskob + change(arr, 2*index+1, Lskob, Rskob, answer) + arr[index].data + change(arr, 2*(index+1), Lskob, Rskob, answer) + Rskob;
-    else return change(arr, 2*index+1, Lskob, Rskob, answer) + arr[index].data + change(arr, 2*(index+1), Lskob, Rskob, answer);
+void change(vector<Tree>arr, int index,int &count, string Lskob, string Rskob, string &answer) { // преобразует дерево-формулу в формулу этого дерева
+    if (count >= arr.size())
+        return;
+    if (arr[count].data == '*' || arr[count].data == '+' || arr[count].data == '-'){
+        index = count;
+        count++;
+        answer =  answer + Lskob;
+        change(arr, index, count, Lskob, Rskob, answer);
+        answer = answer + arr[index].data;
+        change(arr, index, count, Lskob, Rskob, answer);
+        answer = answer + Rskob;
+    }
+    else{
+        index = count;
+        count++;
+        answer = answer + arr[index].data;
+    }
 }
 
 void right(vector<Tree>&arr, int index) { //раскрывает скобки множителем пред скобкой
-  char symb = arr[2*index+1].data;
-  arr[2*(2*index+1)+1].data = symb;
-  arr[2*index+1].data = arr[2*(index+1)].data;
-  char copy = arr[4*(index+1)+1].data;
-  arr[4*(index+1)+1].data = symb;
-  arr[2*(2*index+2)].data = copy;
+  char symb = arr[index+1].data;
+  arr[index+2].data = symb;
+  arr[index+1].data = arr[index].data;
+  arr[index].data = arr[index+4].data;
+  arr[index+4].data = arr[index+1].data;
+  char copy = arr[index+5].data;
+  arr[index+5].data = symb;
+  arr[index+3].data = copy;
 }
 
 void left(vector<Tree>&arr, int index ) { //раскрывает скобки множителем после скобки
-  char symb = arr[2*(index+1)].data;
-  arr[2*(2*(index+1)+1)].data = symb;
-  arr[2*(index+1)].data = arr[2*index+1].data;
-  char copy = arr[2*(2*index+2)].data;
-  arr[2*(2*index+2)].data = symb;
-  arr[4*(index+1)+1].data = copy;
+  char symb = arr[index+4].data;
+  arr[index+6].data = symb;
+  arr[index+4].data = arr[index].data;
+  arr[index].data = arr[index+1].data;
+  arr[index+1].data = arr[index+4].data;
+  char copy = arr[index+3].data;
+  arr[index+3].data = symb;
+  arr[index+5].data = copy;
 }
 
 bool test(char buff[]) { // проверка на  некорректные данные
@@ -117,8 +138,8 @@ bool test(char buff[]) { // проверка на  некорректные да
         return false;
         if (i < 2 || i > strlen(buff)-3)
           return false;
-        if (!isalnum(buff[i-1]) && !isalnum(buff[i+1]))
-          return false;
+        if (buff[i-1] == '(' || buff[i+1] == ')')
+            return false;
     }
     if ((!isalnum(buff[i]) || isupper(buff[i])) && buff[i] != '+' && buff[i] != '-' && buff[i] != '*' && buff[i] != '(' && buff[i] != ')')
       return false;
@@ -171,58 +192,66 @@ int main() {
     cout<<"Пустая строка"<<endl;
     return 0;
   }
-  int ct = 1, max_skob = 0, N, j = 0, minus_flag = 0;
-  for(int i = 0; buffer[i] != '\0'; i++) {
-    if (buffer[i] == '(')
-      ct++;
-    if (buffer[i] == ')') {
-      if (ct > max_skob)
-        max_skob = ct;
-      ct = 1;
-    }
-    if (buffer[i]  == '-')  minus_flag = 1;
+  int N=0, j = 0, minus_flag = 0;
+  for (int i=0;buffer[i]!='\0';i++){
+      if (buffer[i] != '(' && buffer[i] != ')'){
+          N++;
+      }
+      if (buffer[i]  == '-')  minus_flag = 1;
   }
-  if (max_skob < 2) max_skob = 2;
-  N = pow(2,max_skob)-1;
   vector <Tree> arr(N);
   for (int i = 0; i < N; i++)
     arr[i].data = '#';
   cout<<endl;
-  buildTree(arr, 0, N, buffer, j);
+  int ind=0;
+  buildTree(arr, ind, N, buffer, j);
   cout<<"Дерево-формула: ";
-  for (int i = 0; i < N; i++)
+  for (int i = 0; i < N; i++){
     cout<<arr[i].data;
+  }
   cout<<endl;
   string str;
   int count = 0;
-  print(arr, 0, str, N, count);
+  int s=0;
+  print(arr, s, str, N, count);
   cout<<str;
 
   string Lskob = "(", Rskob = ")", answer = "";
-  answer += change(arr, 0, Lskob, Rskob, answer);
+  int c = 0;
+  change(arr, 0, c, Lskob, Rskob, answer);
   cout<<"Формула дерева: "<<answer<<endl;
 
   cout<<"Префиксная форма записи дерева: ";
-  prefix(arr, 0);
+  int c1=0;
+  prefix(arr, c1);
   cout<<endl;
 
   cout << "Упрощенная формула: ";
-  if (minus_flag == 0) {
+  //if (minus_flag == 0) {
     int left_index = 0, right_index = 0;
-    for (int i = 0; 2*(i+1) < arr.size() && 2*i+1 < arr.size(); i++) {
-      if (arr[i].data == '*' && arr[2*i+1].data != '*' && arr[2*i+1].data != '+' && arr[2*(i+1)].data == '+') {
+    for (int i = 0; i < arr.size(); i++) {
+      if (arr[i].data == '*' && arr[i+2].data == '+' && isalnum(arr[i+1].data) && isalnum(arr[i+3].data) && isalnum(arr[i+4].data) && i < arr.size()-4) {
+        arr.resize(N+2);
+        for (int k=arr.size()-1;k>i+3;k--){
+            arr[k] = arr[k-2];
+        }
         right_index = i;
         right(arr,right_index);
       }
-      if(arr[i].data == '*' && arr[2*(i+1)].data != '*' && arr[2*(i+1)].data != '+' && arr[2*i+1].data == '+'){
+      if(arr[i].data == '*' && arr[i+1].data == '+' && isalnum(arr[i+2].data) && isalnum(arr[i+3].data) && isalnum(arr[i+4].data) && i < arr.size()-4){
+        arr.resize(N+2);
+        for (int k=arr.size()-1;k>i+6;k--){
+            arr[k] = arr[k-2];
+        }
         left_index = i;
         left(arr, left_index);
       }
     }
     string ans = "";
-    ans += change(arr, 0, Lskob, Rskob, ans);
+    c = 0;
+    change(arr, 0, c, Lskob, Rskob, ans);
     cout<<ans<<endl;
-  }
-  else cout<<"Входные данные с минусом! "<<buffer<<endl;
+//  }
+//  else cout<<"Входные данные с минусом! "<<buffer<<endl;
   return 0;
 }
