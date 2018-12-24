@@ -159,18 +159,18 @@ void MainWindow::ChooseANDencode(){ //Кодирует дерево
         arr = (Node*) malloc(sizeof(Node));
         QTextStream in(&file);
         all = in.readLine();
-        if (in.atEnd()){
-            ui->ResultEdit->setText("File is empty");
-            ui->BinaryEdit->setText("File is empty");
-            ui->CodesEdit->setText("File is empty");
-            ui->PreEdit->setText("File is empty");
-            return;
-        }
         int c=0;
         str += all + "\n";
         while (!in.atEnd()){
             all = in.readLine();
             str += all + "\n";
+        }
+        if (str.size() == 0){
+            ui->ResultEdit->setText("File is empty");
+            ui->BinaryEdit->setText("File is empty");
+            ui->CodesEdit->setText("File is empty");
+            ui->PreEdit->setText("File is empty");
+            return;
         }
         ui->PreEdit->setText(str);
         copy += str;
