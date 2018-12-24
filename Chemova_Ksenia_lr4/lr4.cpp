@@ -154,43 +154,43 @@ bool test(char buff[]) { // проверка на  некорректные да
 
 int main() {
 
+  char choose = '9';
+  while (choose != 'q'){
   cout<<"Выберите действие:"<<endl;
   cout << "1 – Ввести данные вручную." << endl;
   cout << "2 – Считать данные из файла." << endl;
-  cout << "3 – Выйти из программы." << endl;
-  int choose;
+  cout << "q – Выйти из программы." << endl;
   char buffer[100];
   cin >> choose;
   cin.ignore();
   switch (choose) {
-    case 1: {
+    case '1': {
         cout<<"Введите формулу: ";
         cin.getline(buffer,100);
         break;
     }
-    case 2: {
+    case '2': {
         ifstream inp("file.txt");
         inp.getline(buffer,100);
         inp.close();
         cout<<"Введенная формула: "<<buffer<<endl;
         break;
     }
-    case 3: {
+    case 'q': {
         return 0;
     }
     default: {
         cout<<"Неправильные входные данные, попробуйте снова."<<endl;
-        return 0;
         }
     }
 
   if (!test(buffer)) {
-    cout<<"Некорректноая строка."<<endl;
-    return 0;
+    cout<<"Некорректная строка."<<endl;
+    continue;
   }
   if (!strlen(buffer)) {
     cout<<"Пустая строка"<<endl;
-    return 0;
+    continue;
   }
   int N=0, j = 0, minus_flag = 0;
   for (int i=0;buffer[i]!='\0';i++){
@@ -251,6 +251,7 @@ int main() {
     c = 0;
     change(arr, 0, c, Lskob, Rskob, ans);
     cout<<ans<<endl;
+  }
 //  }
 //  else cout<<"Входные данные с минусом! "<<buffer<<endl;
   return 0;
