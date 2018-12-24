@@ -7,7 +7,7 @@
 
 using namespace std;
 
-long long int maxc = pow(2,32);
+long long int maxc = pow(2, 32);
 
 struct node {
     int key;
@@ -20,7 +20,31 @@ struct node {
         prior = rand()%maxc; // рандомные числа от 0 до 2^32
     }
 };
+struct nodes{//Структура для возврата результата расщепления
+	node* t1;
+    node* t2;
+    nodes(node* tr1, node* tr2) {
+        t1 = tr1;
+		t2 = tr2;
+    }
+};
 
+nodes* split(node* t, int k){
+	nodes* ts;
+	if(!t){
+		return (new nodes(NULL, NULL));
+	}
+	else if(k > t->key){
+		ts = split(t->right, k);
+		t->right = ts->t1;
+		return (new nodes(t, ts->t2));
+	}
+	else{
+		ts = split(t->left, k);
+		t->left = ts->t2;
+		return (new nodes(ts->t1, t));
+	}
+}
 
 
 node* rotateright(node* p) { // правый поворот вокруг узла p
@@ -88,6 +112,17 @@ node* find( node* tree, int key) {
         return find(tree->right, key);
 }
 
+node* add(node* p, int el) {
+    if (find(p,el)) {
+        cout << "Ключ ["<< el <<"] повторяется"<<endl;
+	return p;
+    }
+    else {
+        p=insert(el, p);
+        cout<<"приоритет нового ключа ["<< (find(p,el))->key <<"] - "<<(find(p,el))->prior<<endl;
+        return p;
+    }
+}
 
 void printtree(node* treenode, int l) {
     if(treenode==NULL) {
@@ -104,20 +139,23 @@ void printtree(node* treenode, int l) {
 }
 
 int main() {
-    node* treap = NULL; // пирамида поиска
+    node* treap = NULL;
+    nodes* ts = NULL;// результат расщипления
+ // пирамида поиска
     int c, el=0;
     string str;
     bool ex = 1;
     char ch;
-
     while(ex) {
       cout<<"1 - ввод с клавиатуры"<<endl;
       cout<<"2 - ввод из файла input.txt"<<endl;
       cout<<"0 - выход из программы"<<endl;
       cout<<"Введите номер действия:"<<endl;
         cin >> ch;
+        getchar();
         switch (ch) {
         case '2': {
+
             ifstream infile("input.txt");
             if(!infile) {
                 cout<<"Файл не открыт!"<<endl;
@@ -139,14 +177,15 @@ int main() {
             cout<<"Некорректные данные!"<<endl;
             return 0;
         }
-        }
+      }
+
         char* arr = new char[str.size()+1];
         strcpy(arr, str.c_str());
         char* tok;
         tok = strtok(arr, " ");
         while(tok != NULL) {
             c = atoi(tok);
-	    if(isalpha(*tok)) {
+	      if(isalpha(*tok)) {
 	        cout<<"Некорректные данные!"<<endl;
                 return 0;
 	    }
@@ -160,22 +199,23 @@ int main() {
         }
         printPriority(treap); // печать приоритетов
         cout<<endl;
-        printtree(treap,0);
-
-        if(isdigit(cin.peek())) {
-            cin.clear();
-	          cin.ignore(1000, '\n');
-	          cout<<"Введите только число!"<<endl;
-	          cin >> el;
+        cout<<"-------------------------------"<<endl;
             printtree(treap,0);
-            Delete(treap);
+            cout << "Введите ключ для расщипления:" << endl;
+            cin >> el;
+            if(!find(treap, el)){
+              cout << "Ключ для расщипления не найден!" << endl;
+              return 0;
+            }
+			      cout<<"-------------------------------"<<endl;
+			      cout<<"------------SPLIT--------------"<<endl;
+            ts = split(treap, el);
+            printtree(ts->t1,0);
+            cout<<"-------------------------------"<<endl;
+    		    printtree(ts->t2,0);
             str.clear();
             delete tok;
             delete[] arr;
-	}
-	else {
-	    cout<<"Некорректные данные!"<<endl;
-	    return 0;
-	}
-}
+
+      }
 }
