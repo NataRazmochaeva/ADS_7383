@@ -31,25 +31,6 @@ struct elem{
     elem* right;
 };
 
-struct history{
-    int val;
-    int exp;                            // 1-add //2-del
-    history* prev;
-    history(history* prev, int a, int b){
-		this->prev = prev;
-		this->val = a;
-        this->exp = b;	
-	}
-};
-
-void del_story(history* tmp){
-    if(tmp->prev != NULL){
-        del_story(tmp->prev);
-        delete(tmp->prev);
-    }
-    
-}
-
 struct trunk{
 	trunk* prev;
 	string str;
@@ -106,22 +87,26 @@ int f_height(elem* root){
 }
 
 int check_tree(elem* root){
+    int error = 0;
     int tmp = 0;
     int left = 0;
     int right = 0;
-    if(root->left != NULL)
+    if(root->left != NULL){
+        error = check_tree(root->left);
         left = root->left->height;
-    if(root->right != NULL)
+    }
+    if(error > 0)
+        return error;
+    if(root->right != NULL){
+        error = check_tree(root->right);
         right = root->right->height;
+    }
+    if(error > 0)
+        return error;
     if(abs(left - right) > 1)
         return root->val;
-    else{
-        if(root->left != NULL)
-            tmp += check_tree(root->left);
-        if(root->right != NULL)
-            tmp += check_tree(root->right);
-    }
-    return tmp;
+    else
+        return 0;
 }
 
 void left_turn(elem* tmp, elem* root){
@@ -268,7 +253,7 @@ int work_with_console(){
         }
         while(flag){
             if(current_s < str1.length())
-                if(isdigit(str1[current_s]) || (str1[current_s] == '-')){
+                if(isdigit(str1[current_s])){
                     str[current_c] = str1[current_s];    
                     current_s++;
                     current_c++;
@@ -322,7 +307,7 @@ int work_with_console(){
         }
         while(flag){
             if(current_s < str1.length())
-                if(isdigit(str1[current_s]) || (str1[current_s] == '-')){
+                if(isdigit(str1[current_s])){
                     str[current_c] = str1[current_s];    
                     current_s++;
                     current_c++;
@@ -410,30 +395,5 @@ int work_with_console(){
 
 int main(){
     work_with_console();
-    /*
-    pr_menu();
-    char way;
-    cin >> way;
-    while(way != '0'){
-        switch (way){
-            case '1':
-                work_with_console();
-                cout << endl;
-                pr_menu();
-                cin >> way;
-                break;
-            case '2':
-				work_with_file();
-                cout << endl;
-                pr_menu();
-                cin >> way;
-                break;
-            default:
-                cout << "Неверно введены данные!" << endl;
-                pr_menu();
-                cin >> way;
-        }
-    }
-    */
     return 0;
 }
