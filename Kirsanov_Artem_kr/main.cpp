@@ -18,60 +18,70 @@ struct node // структура для представления узлов �
     node(int k) { key = k; left = right = 0; size = 1; }
 };
 
-int getsize(node* p) // обертка для поля size, работает с пустыми деревьями (t=NULL)
+int getsize(node* T) // обертка для поля size, работает с пустыми деревьями (t=NULL)
 {
-    if( !p ) return 0;
-    return p->size;
+    if( !T ) return 0;
+    return T->size;
 }
 
-void fixsize(node* p) // установление корректного размера дерева
+void fixsize(node* T) // установление корректного размера дерева
 {
-    p->size = getsize(p->left)+getsize(p->right)+1;
+    T->size = getsize(T->left)+getsize(T->right)+1;
 }
 
-node* insert(node* p, int k) // вставка нового узла с ключом k в дерево p
+node* join(node* T, node* q) // объединение двух деревьев
 {
-    if( !p ) return new node(k);
-    if( p->key>k )
-        p->left = insert(p->left,k);
-    else
-        p->right = insert(p->right,k);
-    fixsize(p);
-    return p;
-}
-
-node* join(node* p, node* q) // объединение двух деревьев
-{
-    if( !p ) return q;
-    if( !q ) return p;
-    if( rand()%(p->size+q->size) < p->size )
+    if( !T ) return q;
+    if( !q ) return T;
+    if( rand()%(T->size+q->size) < T->size )
     {
-        p->right = join(p->right,q);
-        fixsize(p);
-        return p;
+        T->right = join(T->right,q);
+        fixsize(T);
+        return T;
     }
     else
     {
-        q->left = join(p,q->left);
+        q->left = join(T,q->left);
         fixsize(q);
         return q;
     }
 }
 
-node* remove(node* p, int k) // удаление из дерева p первого найденного узла с ключом k
+node* insert(node* T, int k, unsigned int* count) // вставка нового узла с ключом k в дерево p
 {
-    if( !p ) return p;
-    if( p->key==k )
+    if( !T ) return new node(k);
+    if( T->key>k ){
+        (*count)++;
+        T->left = insert(T->left,k, count);
+    }
+    else{
+        (*count)++;
+        T->right = insert(T->right,k, count);
+    }
+    fixsize(T);
+    return T;
+}
+
+node* remove(node* T, int k, unsigned int* comparison) // удаление из дерева p первого найденного узла с ключом k
+{
+    if( !T ) return T;
+
+    if( T->key==k )
     {
-        node* q = join(p->left,p->right);
-        delete p;
+        (*comparison)++;
+        node* q = join(T->left,T->right);
+        delete T;
         return q;
     }
-    else if( k<p->key )
-        p->left = remove(p->left,k);
-    else
-        p->right = remove(p->right,k);
-    return p;
+    else if( k<T->key ){
+        (*comparison)++;
+        T->left = remove(T->left,k, comparison);
+    }
+    else{
+        (*comparison)++;
+        T->right = remove(T->right,k, comparison);
+    }
+    return T;
 }
 
 node* destroy(node* T){
@@ -87,15 +97,12 @@ int main()
 {
     srand(unsigned(time(0)));
     node *T = NULL;
-    unsigned int count, range, ins, del, step;
-    double seconds;
+    unsigned int count, ins, del, step, comparison = 0;
     ofstream file;
     file.open("output.txt");
 
     cout << "Enter the number of nodes:" << endl;
     cin >> count;
-    cout << "Enter the range: " << endl;
-    cin >> range;
     cout << "Enter the number of elements to be inserted: " << endl;
     cin >> ins;
     cout << "Enter the number of elements to be deleted: " << endl;
@@ -103,44 +110,49 @@ int main()
     cout << "Enter the segment step:" << endl;
     cin >> step;
 
-    vector<int> x(count+ins);
-    vector<int> temp(count+ins);
-    for(int i = 0; i < count+ins; i++){
-        x[i] = range/count*i;
+    if(count > 50000) count = 50000;
+    if(ins > 50000) ins = 50000;
+    vector<unsigned int> x(count);
+    for(unsigned int i = 0; i < count; i++){
+        x[i] = i;
     } 
     random_shuffle(x.begin(), x.end());
-    for(int i = 0; i < count; i++){
-        T = insert(T, x[i]);
+
+    for(unsigned int i = 0; i < count; i++){
+        T = insert(T, x[i], &comparison);
     }
 
-    file << "Number of el\tElapsed insertion time in seconds" << endl;
-    seconds = 0;
-    for(int i = step; i <= ins; i+=step){
-        for (int k = count+i; k < count+i+step; k++) {
-            clock_t starti = clock();
-            T = insert(T, x[k]);
-            clock_t endi = clock();
-            seconds += (double)(endi - starti) / CLOCKS_PER_SEC;
+    file << "For insertion:" << endl;
+    file << "Number of elements\tNumber of comparisons" << endl;
+    comparison = 0;
+    for(unsigned int i = step; i <= ins; i+=step){
+        for (int k = i; k < i+step; k++) {
+            T = insert(T, x[k], &comparison);
         }
-        file << i << "\t\t\t\t";
-        file << setprecision(5) << seconds << endl;
+        file.width(18);
+        cout << i << endl;
+        //file << i;
+        file.width(23);
+        file << comparison;
+        file << endl;
     }
 
-    file << endl;
+    file << endl << "For delete:" << endl;
+    file << "Number of elements\tNumber of comparisons" << endl;
+    comparison = 0;
     if(del > count+ins) del = count + ins;
-    file << "Number of el\tElapsed time to delete in seconds" << endl;
-    seconds = 0;
-    for(int i = step; i <= del; i+=step){
-        for (int k = count; k < count + i; k++) {
-            clock_t starti = clock();
-            T = remove(T, x[k]);
-            clock_t endi = clock();
-            seconds += (double)(endi - starti) / CLOCKS_PER_SEC;
+    for(int i = del; i >= 0; i-=step){
+        for (int k = i+step; k > i; k--) {
+            T = remove(T, x[k], &comparison);
         }
-        file << i << "\t\t\t\t";
-        file << setprecision(5) << seconds << endl;
+        file.width(18);
+        //file << i;
+        file.width(23);
+        file << comparison;
+        file << endl;
     }
 
+    destroy(T);
     cout << "The program finished correctly";
     return 0;
 }
