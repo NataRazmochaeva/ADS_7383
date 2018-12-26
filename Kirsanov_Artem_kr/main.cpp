@@ -130,8 +130,7 @@ int main()
             T = insert(T, x[k], &comparison);
         }
         file.width(18);
-        cout << i << endl;
-        //file << i;
+        file << i;
         file.width(23);
         file << comparison;
         file << endl;
@@ -146,7 +145,7 @@ int main()
             T = remove(T, x[k], &comparison);
         }
         file.width(18);
-        //file << i;
+        file << i;
         file.width(23);
         file << comparison;
         file << endl;
